@@ -1,0 +1,953 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kiro + Skill · Java 后端开发实践分享</title>
+    <style>
+      body { background: #000000; color: #f5f5f7; }
+      /* FOUC guard: keep app invisible until JS inits, suppress all transitions */
+      #app:not(.ready) { opacity: 0; }
+      #app:not(.ready) .slide,
+      #app:not(.ready) [data-f] { transition: none !important; }
+      /* Kiro slides extra styles */
+      .kiro-tag { font-size:.85rem; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--dim); margin-bottom:.3rem; font-family:var(--font-sans); }
+      .kiro-code { background:#1d1d1f; border:none; border-radius:10px; padding:1.2rem; font-size:.85rem; line-height:1.7; font-family:var(--font-mono); overflow-x:auto; width:100%; text-align:left; color:#f5f5f7; white-space:pre-wrap; word-break:break-word; }
+      .kiro-code .kw { color:#ff3b30; } .kiro-code .ann { color:#2997ff; } .kiro-code .str { color:#32d74b; }
+      .kiro-code .cmt { color:#86868b; font-style:italic; } .kiro-code .cls { color:#ffcc00; } .kiro-code .num { color:#2997ff; }
+      .kiro-badge { display:inline-block; padding:4px 10px; border-radius:12px; font-size:.75rem; font-weight:600; letter-spacing:.5px; }
+      .kiro-badge-blue { background:#1c1c1e; color:#2997ff; border:none; }
+      .kiro-badge-green { background:#1c1c1e; color:#32d74b; border:none; }
+      .kiro-badge-gold { background:#1c1c1e; color:#ffcc00; border:none; }
+      .kiro-badge-purple { background:#1c1c1e; color:#af52de; border:none; }
+      .kiro-step { display:flex; align-items:flex-start; gap:.8rem; background:transparent; border-radius:8px; padding:.5rem .7rem; border-left:none; }
+      .kiro-step-icon { min-width:1.6rem; height:1.6rem; border-radius:50%; background:#1d1d1f; display:flex; align-items:center; justify-content:center; font-size:.75rem; color:#f5f5f7; flex-shrink:0; }
+      .kiro-compare { width:100%; border-collapse:collapse; font-size:.85rem; }
+      .kiro-compare th { background:transparent; padding:8px 12px; text-align:left; color:var(--dim); border-bottom:1px solid #333; }
+      .kiro-compare td { padding:8px 12px; color:#f5f5f7; border-bottom:1px solid #1c1c1e; }
+      .kiro-highlight { background:#1d1d1f; border:none; border-radius:12px; padding:.8rem 1rem; }
+      .kiro-timeline { display:flex; align-items:center; gap:0; width:100%; max-width:800px; }
+      .kiro-tl-item { flex:1; text-align:center; position:relative; }
+      .kiro-tl-item:not(:last-child)::after { content:''; position:absolute; top:16px; left:60%; width:80%; height:2px; background:#333; }
+      .kiro-tl-dot { width:32px; height:32px; border-radius:50%; margin:0 auto 6px; background:#1d1d1f; display:flex; align-items:center; justify-content:center; font-size:.85rem; position:relative; z-index:1; border:none; }
+      .kiro-tl-title { font-size:.8rem; font-weight:600; color:#f5f5f7; }
+      .kiro-tl-label { font-size:.7rem; color:#86868b; }
+      /* Agenda grid */
+      .agenda-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; max-width:800px; width:100%; }
+      .agenda-card { padding:1.2rem; background:var(--card-bg); border:1px solid var(--card-border); border-radius:14px; text-align:center; }
+      .agenda-icon { font-size:2rem; margin-bottom:.5rem; }
+      .agenda-title { font-weight:700; font-size:1.1rem; margin-bottom:.3rem; }
+      .agenda-desc { font-size:.82rem; color:var(--dim); line-height:1.4; }
+      .agenda-time { font-family:var(--font-mono); font-size:.7rem; color:var(--dim); margin-top:.5rem; }
+      /* Part divider */
+      .part-number { font-family:var(--font-mono); font-size:clamp(3rem,8vw,6rem); font-weight:900; color:rgba(255,255,255,0.08); line-height:1; }
+      /* Code compare */
+      .code-compare { display:grid; grid-template-columns:1fr 1fr; gap:1rem; max-width:950px; width:100%; }
+      .code-panel { border-radius:12px; padding:1rem; font-size:.72rem; line-height:1.6; font-family:var(--font-mono); overflow-x:auto; text-align:left; white-space:pre-wrap; word-break:break-word; }
+      .code-panel-bad { background:#1a0000; border:1px solid rgba(255,59,48,0.2); }
+      .code-panel-good { background:#001a00; border:1px solid rgba(50,215,75,0.2); }
+      .code-panel-label { font-family:var(--font-cn); font-size:.8rem; font-weight:600; margin-bottom:.5rem; display:block; }
+      /* Spec timeline */
+      .spec-flow { display:flex; align-items:center; gap:.6rem; justify-content:center; flex-wrap:wrap; }
+      .spec-node { padding:.8rem 1.2rem; background:var(--card-bg); border:1px solid var(--card-border); border-radius:12px; text-align:center; min-width:140px; }
+      .spec-node-icon { font-size:1.5rem; margin-bottom:.3rem; }
+      .spec-node-title { font-weight:600; font-size:.9rem; }
+      .spec-arrow { color:var(--dim); font-size:1.2rem; }
+      /* Hook event table */
+      .hook-table { width:100%; max-width:700px; border-collapse:collapse; font-size:.82rem; }
+      .hook-table th { text-align:left; padding:6px 10px; color:var(--dim); border-bottom:1px solid #333; font-weight:600; }
+      .hook-table td { padding:6px 10px; border-bottom:1px solid #1c1c1e; }
+      /* Efficiency compare table */
+      .eff-table { width:100%; max-width:800px; border-collapse:collapse; font-size:.8rem; }
+      .eff-table th { text-align:left; padding:8px 10px; color:var(--dim); border-bottom:1px solid #333; font-weight:600; }
+      .eff-table td { padding:8px 10px; border-bottom:1px solid #1c1c1e; }
+      .eff-save { color:var(--accent3); font-weight:600; }
+      /* Landing steps */
+      .landing-steps { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; max-width:800px; width:100%; }
+      .landing-step { padding:1.2rem; background:var(--card-bg); border:1px solid var(--card-border); border-radius:14px; }
+      .landing-step-icon { font-size:1.8rem; margin-bottom:.5rem; }
+      .landing-step-title { font-weight:700; font-size:1rem; margin-bottom:.4rem; }
+      .landing-step-desc { font-size:.78rem; color:var(--dim); line-height:1.5; }
+      .landing-step-time { font-family:var(--font-mono); font-size:.7rem; color:var(--accent); margin-top:.5rem; }
+      /* Property table */
+      .prop-table { width:100%; max-width:750px; border-collapse:collapse; font-size:.8rem; }
+      .prop-table td { padding:6px 10px; border-bottom:1px solid #1c1c1e; }
+      .prop-table td:first-child { color:var(--accent); font-family:var(--font-mono); font-weight:600; white-space:nowrap; width:60px; }
+      /* Task list style */
+      .task-list { font-family:var(--font-mono); font-size:.78rem; line-height:2; text-align:left; max-width:500px; }
+      .task-list .done { color:var(--accent3); }
+      .task-list .optional { color:var(--dim); }
+      /* Git tree */
+      .git-tree { font-family:var(--font-mono); font-size:.78rem; line-height:1.8; text-align:left; background:var(--card-bg); border-radius:10px; padding:1rem 1.5rem; max-width:400px; white-space:pre-wrap; word-break:break-word; }
+      /* Tool stack grid */
+      .tool-stack { display:grid; grid-template-columns:1fr 1fr; gap:.6rem; max-width:650px; width:100%; font-size:.82rem; }
+      .tool-stack-item { padding:.6rem 1rem; background:var(--card-bg); border:1px solid var(--card-border); border-radius:8px; }
+      .tool-stack-name { font-weight:600; }
+      .tool-stack-desc { color:var(--dim); font-size:.75rem; }
+      /* Career cards */
+      .career-cards { display:flex; flex-direction:column; gap:.6rem; max-width:750px; width:100%; }
+      .career-card { display:flex; align-items:flex-start; gap:1rem; padding:.8rem 1.2rem; background:var(--card-bg); border:1px solid var(--card-border); border-radius:12px; }
+      .career-num { font-family:var(--font-mono); font-weight:700; font-size:1.3rem; color:var(--accent); min-width:2rem; }
+      .career-body { font-size:.85rem; }
+      .career-title { font-weight:700; font-size:.95rem; margin-bottom:.2rem; }
+      .career-desc { color:var(--dim); font-size:.78rem; line-height:1.5; }
+      /* Responsive additions */
+      @media (max-width:768px) {
+        .agenda-grid { grid-template-columns:1fr; }
+        .code-compare { grid-template-columns:1fr; }
+        .landing-steps { grid-template-columns:1fr; }
+        .tool-stack { grid-template-columns:1fr; }
+        .code-panel { font-size:.6rem; }
+        .spec-flow { flex-direction:column; }
+        .spec-arrow { transform:rotate(90deg); }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app" style="opacity:0">
+
+      <!-- ============================== 0. 封面 ============================== -->
+      <section class="slide slide-title">
+        <div class="bg-grid"></div>
+        <div class="floating-symbols">
+          <span style="left:10%;animation-delay:0s">🤖</span>
+          <span style="left:30%;animation-delay:4s">☕</span>
+          <span style="left:50%;animation-delay:8s">🧩</span>
+          <span style="left:70%;animation-delay:2s">⚡</span>
+          <span style="left:85%;animation-delay:6s">🎯</span>
+        </div>
+        <div class="text-center" style="position:relative;z-index:1">
+          <div class="title-mega"><span class="gradient-text">Kiro + Skill</span></div>
+          <div class="subtitle cn">Java 后端开发实践分享</div>
+          <div class="cn dim mt-2" style="font-size:0.85rem">从 Skill 深度使用到 AI 辅助后端开发落地<br>结合 ai-crm 真实项目案例</div>
+          <div class="cn dim mt-2" style="font-size:0.82rem">🎯 寄语：AI 进化速度太快，所有经验都只是暂时的<br>一切需要自己和 AI 磨合探索</div>
+          <div class="flex-row gap-2 mt-3" style="justify-content:center;flex-wrap:wrap">
+            <span class="kiro-badge kiro-badge-blue">Kiro IDE</span>
+            <span class="kiro-badge kiro-badge-green">Skills 生态</span>
+            <span class="kiro-badge kiro-badge-gold">Java / Spring Boot</span>
+            <span class="kiro-badge kiro-badge-purple">Spec 驱动开发</span>
+          </div>
+          <div class="meta-badge">← → 翻页 · ↑ ↓ 步进 · ESC 总览</div>
+        </div>
+      </section>
+
+      <!-- ============================== 1. 议程 ============================== -->
+      <section class="slide">
+        <div class="flex-col gap-3" style="align-items:center">
+          <div class="title-large cn">Agenda · <span class="gradient-text">今天讲什么</span></div>
+          <div class="cn dim" style="font-size:.9rem">三个板块</div>
+
+          <div class="agenda-grid mt-2">
+            <div class="agenda-card" data-f="1">
+              <div class="agenda-icon">🧩</div>
+              <div class="agenda-title cn">Part 1</div>
+              <div class="agenda-desc cn">Skill 快速回顾<br>简易温习核心概念与配置</div>
+            </div>
+            <div class="agenda-card" data-f="2">
+              <div class="agenda-icon">⚡</div>
+              <div class="agenda-title cn">Part 2</div>
+              <div class="agenda-desc cn">Skill 深度使用<br>Steering 文件 · Spec 驱动开发 · Hooks 自动化</div>
+            </div>
+            <div class="agenda-card" data-f="3">
+              <div class="agenda-icon">☕</div>
+              <div class="agenda-title cn">Part 3</div>
+              <div class="agenda-desc cn">Java 后端落地<br>ai-crm 真实案例 · 积分模块全流程 · 团队协作规范</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================== 2. Part 1 分隔页 ============================== -->
+      <section class="slide slide-title">
+        <div class="bg-grid"></div>
+        <div class="text-center" style="position:relative;z-index:1">
+          <div class="part-number">01</div>
+          <div class="title-large cn">Part 1</div>
+          <div class="title-mega cn" style="font-size:clamp(2rem,5vw,3.5rem)"><span class="gradient-text">Skill 快速回顾</span></div>
+          <div class="subtitle cn">简短温习 Skill 核心机制，我们快速过一遍</div>
+        </div>
+      </section>
+
+      <!-- ============================== 3. Skill 快速温习 ============================== -->
+      <section class="slide">
+        <div class="flex-col gap-3" style="align-items:center">
+          <div class="section-badge cn">Part 1</div>
+          <div class="title-large cn">温故知新：<span class="gradient-text">核心概念与最佳实践</span></div>
+
+          <div class="card cn mt-2" data-f="1" style="max-width:650px;font-size:.95rem">
+            <strong class="accent">什么是 Skill？</strong><br>
+            它是可安装的 AI 能力扩展包（SKILL.md），提供即插即用的模块化知识。
+          </div>
+
+          <div class="card cn" data-f="2" style="max-width:650px;font-size:.9rem">
+            <strong class="accent3">常用命令速记</strong>
+            <div class="mono mt-1" style="font-size:.78rem;white-space:pre">搜索：npx skills find java
+安装到工作区：npx skills add owner/repo@skill-name
+全局安装：npx skills add owner/repo@skill-name -g</div>
+          </div>
+
+          <div class="card cn" data-f="3" style="max-width:650px;font-size:.9rem;border-color:rgba(255,204,0,0.2)">
+            🏅 <strong style="color:#ffcc00">团队最佳实践复习</strong><br>
+            <span class="mt-1" style="display:block">业务和项目规范类的 Skill，务必要安装在工作区（<code>.agents/skills/</code>）并提交到 git！<br>这样能保证全团队使用这套规范的拉齐。</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================== 4. Part 2 分隔页 ============================== -->
+      <section class="slide slide-title">
+        <div class="bg-grid"></div>
+        <div class="text-center" style="position:relative;z-index:1">
+          <div class="part-number">02</div>
+          <div class="title-large cn">Part 2</div>
+          <div class="title-mega cn" style="font-size:clamp(2rem,5vw,3.5rem)"><span class="gradient-text">Skill 深度使用</span></div>
+          <div class="subtitle cn">Steering · Spec 驱动开发 · Hooks 自动化</div>
+        </div>
+      </section>
+
+      <!-- ============================== 5. Steering 文件 ============================== -->
+      <section class="slide">
+        <div class="flex-col gap-2" style="align-items:center">
+          <div class="section-badge cn">Part 2 · Steering</div>
+          <div class="title-large cn">Steering：让 AI <span class="gradient-text">了解你的项目</span></div>
+          <div class="cn dim" style="max-width:650px;font-size:.88rem;text-align:center">Steering 文件是放在 <code>.kiro/steering/</code> 下的 Markdown，<br>每次对话都会自动注入给 Kiro，相当于给 AI 的<strong class="accent">永久上下文</strong>。</div>
+
+          <div class="flex-row gap-2 mt-2" style="flex-wrap:wrap;justify-content:center">
+            <div class="card cn" data-f="1" style="min-width:180px;max-width:220px;text-align:center">
+              <div style="font-size:1.2rem">📌</div>
+              <strong>always（默认）</strong><br>
+              <span class="dim" style="font-size:.78rem">每次对话都注入<br>适合项目规范、架构说明</span>
+            </div>
+            <div class="card cn" data-f="2" style="min-width:180px;max-width:220px;text-align:center">
+              <div style="font-size:1.2rem">📂</div>
+              <strong>fileMatch</strong><br>
+              <span class="dim" style="font-size:.78rem">匹配特定文件时注入<br>如编辑 *.sql 时注入 DB 规范</span>
+            </div>
+            <div class="card cn" data-f="3" style="min-width:180px;max-width:220px;text-align:center">
+              <div style="font-size:1.2rem">🔑</div>
+              <strong>manual</strong><br>
+              <span class="dim" style="font-size:.78rem">用 # 手动引用<br>按需加载，节省上下文</span>
+            </div>
+          </div>
+
+          <div class="card cn mt-2" data-f="4" style="max-width:650px;font-size:.85rem">
+            <strong class="accent2">你们项目的 Steering</strong>
+            <div class="mono mt-1" style="font-size:.72rem;white-space:pre;line-height:1.6"># .kiro/steering/structure.md
+---
+inclusion: always
+---
+# 项目结构规范
+- 所有枚举必须实现 BaseEnum
+- InputDto 必须以 InputDto 结尾
+- 所有表必须有 appid 字段（多租户）
+- Session 上下文从 SessionHolder 读取
+- 禁止在 Service 中写参数校验逻辑</div>
+          </div>
+
+          <div class="cn dim text-center mt-1" data-f="5" style="max-width:600px;font-size:.82rem">
+            💡 有了 Steering，Kiro 生成的每一行代码都自动遵守团队规范，<br>不需要每次对话都重复说明约定
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================== 6. Steering 实战效果 ============================== -->
+      <section class="slide">
+        <div class="flex-col gap-2" style="align-items:center">
+          <div class="section-badge cn">Part 2 · Steering</div>
+          <div class="title-large cn">Steering 实战：<span class="gradient-text">规范自动落地</span></div>
+
+          <div class="code-compare mt-2">
+            <div class="code-panel code-panel-bad" data-f="1">
+              <span class="code-panel-label" style="color:#ff3b30">❌ 没有 Steering</span>
+<span style="color:#86868b">// AI 可能生成这样的代码</span>
+<span style="color:#ff3b30">public class</span> <span style="color:#ffcc00">UserDto</span> {
+  <span style="color:#ff3b30">private</span> Integer userId;   <span style="color:#86868b">// 没有 @ApiModelProperty</span>
+  <span style="color:#ff3b30">private</span> String name;      <span style="color:#86868b">// 没有校验注解</span>
+}
+
+<span style="color:#ff3b30">public enum</span> <span style="color:#ffcc00">StatusEnum</span> {   <span style="color:#86868b">// 没实现 BaseEnum</span>
+  ACTIVE, INACTIVE
+}
+
+<span style="color:#86868b">// Service 里写了参数校验</span>
+<span style="color:#ff3b30">if</span> (dto.getUserId() == <span style="color:#ff3b30">null</span>) {
+  <span style="color:#ff3b30">throw new</span> <span style="color:#ffcc00">Exception</span>(<span style="color:#32d74b">"userId不能为空"</span>);
+}
+            </div>
+            <div class="code-panel code-panel-good" data-f="2">
+              <span class="code-panel-label" style="color:#32d74b">✅ 有 Steering 自动生成</span>
+<span style="color:#86868b">// Kiro 自动遵守所有规范</span>
+<span style="color:#2997ff">@Data</span>
+<span style="color:#ff3b30">public class</span> <span style="color:#ffcc00">UserInputDto</span> {
+  <span style="color:#2997ff">@ApiModelProperty</span>(<span style="color:#32d74b">"应用ID"</span>)
+  <span style="color:#2997ff">@NotNull</span>(message = <span style="color:#32d74b">"appId不能为空"</span>)
+  <span style="color:#ff3b30">private</span> Integer appid;
+
+  <span style="color:#2997ff">@ApiModelProperty</span>(<span style="color:#32d74b">"用户ID"</span>)
+  <span style="color:#2997ff">@NotNull</span>(message = <span style="color:#32d74b">"userId不能为空"</span>)
+  <span style="color:#ff3b30">private</span> Long userId;
+}
+
+<span style="color:#ff3b30">public enum</span> <span style="color:#ffcc00">StatusEnum</span> <span style="color:#ff3b30">implements</span> <span style="color:#ffcc00">BaseEnum</span> {
+  ACTIVE(<span style="color:#2997ff">1</span>, <span style="color:#32d74b">"启用"</span>), INACTIVE(<span style="color:#2997ff">0</span>, <span style="color:#32d74b">"禁用"</span>);
+  <span style="color:#86868b">// getValue() + getDesc() 自动实现</span>
+}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================== 7. Steering 实战对比 例2 ============================== -->
+      <section class="slide">
+        <div class="flex-col gap-2" style="align-items:center">
+          <div class="section-badge cn">Part 2 · Steering 实战</div>
+          <div class="title-large cn">Steering 实战：<span class="gradient-text">枚举 &amp; Controller</span></div>
+
+          <div class="code-compare mt-2">
+            <div class="code-panel code-panel-bad" data-f="1">
+              <span class="code-panel-label" style="color:#ff3b30">❌ 没有 Steering</span>
+<span style="color:#86868b">// 枚举：没实现 BaseEnum，用裸数字</span>
+<span style="color:#ff3b30">public enum</span> <span style="color:#ffcc00">WorkOrderStatusEnum</span> {
+  PENDING, PROCESSING, DONE
+}
+<span style="color:#86868b">// Service 里直接比较数字</span>
+<span style="color:#ff3b30">if</span> (workOrder.getStatus() == <span style="color:#2997ff">1</span>) {
+  <span style="color:#86868b">// 1 是什么？没人知道</span>
+}
+<span style="color:#86868b">// InputDto：枚举字段没有 @CheckEnum</span>
+<span style="color:#2997ff">@Data</span>
+<span style="color:#ff3b30">public class</span> <span style="color:#ffcc00">WorkOrderQueryInputDto</span> {
+  <span style="color:#86868b">// 传入 status=999 也不会报错！</span>
+  <span style="color:#ff3b30">private</span> Integer status;
+  <span style="color:#ff3b30">private</span> Integer workOrderType;
+}
+<span style="color:#86868b;font-size:.7rem">传入非法枚举值 status=999，Service 层拿到脏数据</span>
+            </div>
+            <div class="code-panel code-panel-good" data-f="2">
+              <span class="code-panel-label" style="color:#32d74b">✅ 有 Steering 自动生成</span>
+<span style="color:#86868b">// 枚举：自动实现 BaseEnum</span>
+<span style="color:#ff3b30">public enum</span> <span style="color:#ffcc00">WorkOrderStatusEnum</span>
+    <span style="color:#ff3b30">implements</span> <span style="color:#ffcc00">BaseEnum</span> {
+  PENDING(<span style="color:#2997ff">0</span>, <span style="color:#32d74b">"待处理"</span>),
+  PROCESSING(<span style="color:#2997ff">1</span>, <span style="color:#32d74b">"处理中"</span>),
+  DONE(<span style="color:#2997ff">2</span>, <span style="color:#32d74b">"已完成"</span>);
+}
+<span style="color:#86868b">// InputDto：枚举字段自动加 @CheckEnum</span>
+<span style="color:#2997ff">@Data</span>
+<span style="color:#ff3b30">public class</span> <span style="color:#ffcc00">WorkOrderQueryInputDto</span> {
+  <span style="color:#2997ff">@ApiModelProperty</span>(<span style="color:#32d74b">"工单状态"</span>)
+  <span style="color:#2997ff">@CheckEnum</span>(value = WorkOrderStatusEnum.<span style="color:#ff3b30">class</span>,
+    message = <span style="color:#32d74b">"工单状态不合法"</span>)
+  <span style="color:#ff3b30">private</span> Integer status;
+}
+<span style="color:#32d74b;font-size:.7rem">传入 status=999 → 接口层直接返回参数错误</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================== 8. Spec 驱动开发概念 ============================== -->
+      <section class="slide">
+        <div class="flex-col gap-2" style="align-items:center">
+          <div class="section-badge cn">Part 2 · Spec</div>
+          <div class="title-large cn">Spec 驱动开发：<span class="gradient-text">从需求到代码</span></div>
+          <div class="cn dim" style="font-size:.88rem">结构化工作流</div>
+
+          <div class="spec-flow mt-2">
+            <div class="spec-node" data-f="1">
+              <div class="spec-node-icon">📋</div>
+              <div class="spec-node-title cn">requirements.md</div>
+              <div class="cn dim" style="font-size:.75rem">需求文档</div>
+            </div>
+            <div class="spec-arrow" data-f="2">→</div>
+            <div class="spec-node" data-f="2">
+              <div class="spec-node-icon">🏗️</div>
+              <div class="spec-node-title cn">design.md</div>
+              <div class="cn dim" style="font-size:.75rem">技术设计</div>
+            </div>
+            <div class="spec-arrow" data-f="3">→</div>
+            <div class="spec-node" data-f="3">
+              <div class="spec-node-icon">✅</div>
+              <div class="spec-node-title cn">tasks.md</div>
+              <div class="cn dim" style="font-size:.75rem">实现任务</div>
+            </div>
+            <div class="spec-arrow" data-f="4">→</div>
+            <div class="spec-node" data-f="4" style="border-color:var(--accent);background:rgba(41,151,255,0.06)">
+              <div class="spec-node-icon">⚡</div>
+              <div class="spec-node-title cn accent">Execute</div>
+              <div class="cn dim" style="font-size:.75rem">自动执行</div>
+            </div>
+          </div>
+
+          <div class="card cn mt-2" data-f="5" style="max-width:700px;font-size:.85rem">
+            <strong class="accent">📋 requirements.md</strong> — 用户故事 + 验收标准，用自然语言描述"做什么"<br>
+            <strong class="accent mt-1" style="display:inline-block">🏗️ design.md</strong> — 架构设计、数据模型、接口定义、正确性属性<br>
+            <strong class="accent mt-1" style="display:inline-block">✅ tasks.md</strong> — 可执行的任务清单，支持一键 "Run All Tasks"
+          </div>
+
+          <div class="cn dim text-center mt-1" data-f="6" style="font-size:.82rem">
+            💡 Spec 文件存放在 <code>.kiro/specs/{feature-name}/</code>，提交 git 后全团队可见
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================== 9. Hooks 自动化 ============================== -->
+      <section class="slide">
+        <div class="flex-col gap-2" style="align-items:center">
+          <div class="section-badge cn">Part 2 · Hooks</div>
+          <div class="title-large cn">Hooks：<span class="gradient-text">事件驱动的自动化</span></div>
+          <div class="cn dim" style="max-width:650px;font-size:.88rem;text-align:center">Hook 在 IDE 事件发生时自动触发 AI 动作，<br>把重复的检查工作变成<strong class="accent">自动流程</strong>。</div>
+
+          <div class="flex-row gap-2 mt-2" style="align-items:flex-start;flex-wrap:wrap;justify-content:center">
+            <div data-f="1" style="flex:1;min-width:280px;max-width:350px">
+              <div class="cn" style="font-size:.9rem;font-weight:600;margin-bottom:.5rem">常用触发事件</div>
+              <table class="hook-table">
+                <tr><th>事件</th><th>触发时机</th></tr>
+                <tr><td class="mono" style="font-size:.75rem">fileEdited</td><td class="cn">保存文件时</td></tr>
+                <tr><td class="mono" style="font-size:.75rem">preToolUse</td><td class="cn">AI 执行工具前</td></tr>
+                <tr><td class="mono" style="font-size:.75rem">postTaskExecution</td><td class="cn">Spec 任务完成后</td></tr>
+                <tr><td class="mono" style="font-size:.75rem">userTriggered</td><td class="cn">手动点击触发</td></tr>
+                <tr><td class="mono" style="font-size:.75rem">agentStop</td><td class="cn">AI 执行结束后</td></tr>
+              </table>
+            </div>
+
+            <div data-f="2" style="flex:1;min-width:300px;max-width:400px">
+              <div class="cn" style="font-size:.9rem;font-weight:600;margin-bottom:.5rem">实用 Hook 示例</div>
+              <div class="kiro-code" style="font-size:.72rem;line-height:1.5">
+<span style="color:#86868b">// 保存 Java 文件时自动 Code Review</span>
+{
+  <span style="color:#2997ff">"name"</span>: <span style="color:#32d74b">"Java Code Review"</span>,
+  <span style="color:#2997ff">"version"</span>: <span style="color:#32d74b">"1.0.0"</span>,
+  <span style="color:#2997ff">"when"</span>: {
+    <span style="color:#2997ff">"type"</span>: <span style="color:#32d74b">"fileEdited"</span>,
+    <span style="color:#2997ff">"patterns"</span>: [<span style="color:#32d74b">"**/*.java"</span>]
+  },
+  <span style="color:#2997ff">"then"</span>: {
+    <span style="color:#2997ff">"type"</span>: <span style="color:#32d74b">"askAgent"</span>,
+    <span style="color:#2997ff">"prompt"</span>: <span style="color:#32d74b">"检查是否遵守团队规范：
+    1. 枚举是否实现 BaseEnum
+    2. InputDto 是否有 @ApiModelProperty
+    3. 是否有 appid 字段
+    4. Service 是否有参数校验逻辑"</span>
+  }
+}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================== 10. Part 3 分隔页 ============================== -->
+      <section class="slide slide-title">
+        <div class="bg-grid"></div>
+        <div class="text-center" style="position:relative;z-index:1">
+          <div class="part-number">03</div>
+          <div class="title-large cn">Part 3</div>
+          <div class="title-mega cn" style="font-size:clamp(2rem,5vw,3.5rem)"><span class="gradient-text">Java 后端落地实践</span></div>
+          <div class="subtitle cn">以 ai-crm 学员积分模块为例<br>完整演示 Spec 驱动开发全流程</div>
+        </div>
+      </section>
+
+      <!-- ============================== 11. Step 1 - 写需求 ============================== -->
+      <section class="slide">
+        <div class="flex-col gap-2" style="align-items:center">
+          <div class="section-badge cn">Part 3 · Step 1</div>
+          <div class="title-large cn">Step 1：用自然语言<span class="gradient-text">描述需求</span></div>
+          <div class="cn dim" style="font-size:.88rem">告诉 Kiro 你要做什么，它帮你整理成结构化需求文档</div>
+
+          <div class="card cn mt-2" data-f="1" style="max-width:650px;font-size:.9rem">
+            <strong>💬 你对 Kiro 说：</strong><br>
+            <span class="dim" style="display:block;margin-top:.3rem">"给学员积分系统写个 spec，需要三个接口：积分记录分页查询、增加积分、消耗积分。积分变动要记录流水，并发安全要保证。"</span>
+          </div>
+
+          <div class="card cn" data-f="2" style="max-width:650px;font-size:.9rem;border-color:rgba(50,215,75,0.2)">
+            <strong class="accent3">✅ Kiro 生成：</strong><br>
+            <span style="display:block;margin-top:.3rem">4 个结构化需求（含用户故事）<br>每个需求的验收标准（WHEN/THEN 格式）<br>术语表（ExpUser、SubId 等）<br>数据一致性需求</span>
+          </div>
+
+          <div class="card cn" data-f="3" style="max-width:650px;font-size:.82rem;background:#0a0a1a">
+            <strong class="accent">生成的需求示例</strong>
+            <div style="margin-top:.4rem;line-height:1.6">
+              <strong>需求 2：增加积分</strong><br>
+              <span class="dim">用户故事：作为销售顾问，我希望能为指定学员增加积分，以便通过积分激励学员参与课程活动。</span><br><br>
+              验收标准：<br>
+              1. WHEN 调用增加积分接口时，Controller SHALL 接收 userId（必填）、points（最小1）、remark（可选）<br>
+              2. WHEN 请求合法时，Service SHALL 使用分布式锁（以 userId 为锁 key）保证并发安全<br>
+              3. WHILE 持有锁，Service SHALL 查询或初始化积分账户，将余额加上增量<br>
+              4. WHILE 持有锁，Service SHALL 新增 changeType=INCREASE 的流水记录
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================== 12. Step 2 - 技术设计 ============================== -->
+      <section class="slide">
+        <div class="flex-col gap-2" style="align-items:center">
+          <div class="section-badge cn">Part 3 · Step 2</div>
+          <div class="title-large cn">Step 2：自动生成<span class="gradient-text">技术设计</span></div>
+
+          <div class="flex-row gap-2 mt-2" style="flex-wrap:wrap;justify-content:center">
+            <div class="card cn" data-f="1" style="min-width:200px;max-width:250px;text-align:center">
+              <div style="font-size:1.3rem">🏗️</div>
+              <strong>架构分层图</strong><br>
+              <span class="dim" style="font-size:.78rem">Controller → Service → Mapper<br>AOP 横切关注点</span>
+            </div>
+            <div class="card cn" data-f="2" style="min-width:200px;max-width:250px;text-align:center">
+              <div style="font-size:1.3rem">📊</div>
+              <strong>数据模型 + DDL</strong><br>
+              <span class="dim" style="font-size:.78rem">实体类定义、建表 SQL<br>自动遵守 appid 多租户规范</span>
+            </div>
+            <div class="card cn" data-f="3" style="min-width:200px;max-width:250px;text-align:center">
+              <div style="font-size:1.3rem">🔄</div>
+              <strong>业务流程伪代码</strong><br>
+              <span class="dim" style="font-size:.78rem">增加/消耗积分完整步骤<br>含锁和事务边界</span>
+            </div>
+            <div class="card cn" data-f="4" style="min-width:200px;max-width:250px;text-align:center">
+              <div style="font-size:1.3rem">✅</div>
+              <strong>正确性属性（6条）</strong><br>
+              <span class="dim" style="font-size:.78rem">形式化描述系统不变式<br>作为属性测试的依据</span>
+            </div>
+          </div>
+
+          <div class="kiro-code cn mt-2" data-f="5" style="max-width:600px;font-size:.72rem;line-height:1.5">
+<span style="color:#86868b">// 自动生成的实体类</span>
+<span style="color:#2997ff">@Data</span>
+<span style="color:#2997ff">@TableName</span>(<span style="color:#32d74b">"exp_user_points"</span>)
+<span style="color:#ff3b30">public class</span> <span style="color:#ffcc00">ExpUserPoints</span> <span style="color:#ff3b30">extends</span> <span style="color:#ffcc00">EntityBase</span> {
+    <span style="color:#2997ff">@TableId</span>(type = IdType.AUTO)
+    <span style="color:#ff3b30">private</span> Long id;
+    <span style="color:#2997ff">@ApiModelProperty</span>(<span style="color:#32d74b">"租户ID"</span>)
+    <span style="color:#ff3b30">private</span> Long subId;
+    <span style="color:#2997ff">@ApiModelProperty</span>(<span style="color:#32d74b">"学员ID"</span>)
+    <span style="color:#ff3b30">private</span> Long userId;
+    <span style="color:#2997ff">@ApiModelProperty</span>(<span style="color:#32d74b">"当前余额 = totalIncrease - totalConsume"</span>)
+    <span style="color:#ff3b30">private</span> Integer balance;
+    <span style="color:#2997ff">@ApiModelProperty</span>(<span style="color:#32d74b">"累计增加积分"</span>)
+    <span style="color:#ff3b30">private</span> Integer totalIncrease;
+    <span style="color:#2997ff">@ApiModelProperty</span>(<span style="color:#32d74b">"累计消耗积分"</span>)
+    <span style="color:#ff3b30">private</span> Integer totalConsume;
+}
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================== 13. Step 3 - 任务执行 ============================== -->
+      <section class="slide">
+        <div class="flex-col gap-2" style="align-items:center">
+          <div class="section-badge cn">Part 3 · Step 3</div>
+          <div class="title-large cn">Step 3：任务清单 + <span class="gradient-text">一键执行</span></div>
+
+          <div class="flex-row gap-2 mt-2" style="align-items:flex-start;flex-wrap:wrap;justify-content:center">
+            <div data-f="1" style="flex:1;min-width:280px;max-width:400px">
+              <div class="cn" style="font-size:.9rem;font-weight:600;margin-bottom:.5rem">tasks.md 结构</div>
+              <div class="task-list">
+                <div class="done">- [x] 1. 数据库 DDL 脚本</div>
+                <div class="done" style="padding-left:1.2rem">- 创建 exp_user_points 表</div>
+                <div class="done" style="padding-left:1.2rem">- 创建 exp_user_points_record 表</div>
+                <div class="done">- [x] 2. 枚举与错误码</div>
+                <div class="done" style="padding-left:1.2rem">- [x] 2.1 PointsChangeTypeEnum</div>
+                <div class="done" style="padding-left:1.2rem">- [x] 2.2 ErrorCode.POINTS_INSUFFICIENT</div>
+                <div class="done">- [x] 3. 实体类</div>
+                <div class="done">- [x] 7. Service 实现</div>
+                <div class="done" style="padding-left:1.2rem">- [x] 7.2 increase 方法</div>
+                <div class="done" style="padding-left:1.2rem">- [x] 7.4 consume 方法</div>
+                <div class="optional" style="padding-left:1.2rem">- [ ]* 7.3 属性测试（可选）</div>
+                <div class="done">- [x] 9. Controller 实现</div>
+              </div>
+            </div>
+
+            <div data-f="2" style="flex:1;min-width:250px;max-width:320px">
+              <div class="cn" style="font-size:.9rem;font-weight:600;margin-bottom:.5rem">执行方式</div>
+              <div class="flex-col gap-2">
+                <div class="card cn" style="padding:.6rem .8rem">
+                  <span class="accent" style="font-weight:700">1</span> <strong>Run All Tasks</strong><br>
+                  <span class="dim" style="font-size:.78rem">Kiro 按顺序执行所有任务，自动写代码、建文件</span>
+                </div>
+                <div class="card cn" style="padding:.6rem .8rem">
+                  <span class="accent" style="font-weight:700">2</span> <strong>Execute Task N</strong><br>
+                  <span class="dim" style="font-size:.78rem">单独执行某个任务，适合增量开发或重新生成</span>
+                </div>
+                <div class="card cn" style="padding:.6rem .8rem">
+                  <span class="accent" style="font-weight:700">3</span> <strong>状态追踪</strong><br>
+                  <span class="dim" style="font-size:.78rem">[ ] 未开始 → [-] 进行中 → [x] 完成</span>
+                </div>
+              </div>
+              <div class="cn dim mt-1" style="font-size:.75rem">标注 * 的任务是可选任务（如属性测试），MVP 阶段可跳过</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================== 14. 核心代码展示 - Service ============================== -->
+      <section class="slide">
+        <div class="flex-col gap-2" style="align-items:center">
+          <div class="section-badge cn">Part 3 · 代码展示</div>
+          <div class="title-large cn">Kiro 生成的 <span class="gradient-text">Service 代码</span></div>
+          <div class="cn dim" style="font-size:.85rem">增加积分（含分布式锁）</div>
+
+          <div class="kiro-code mt-2" data-f="1" style="max-width:700px;font-size:.68rem;line-height:1.5">
+<span style="color:#2997ff">@RedissonLock</span>(key = <span style="color:#32d74b">"#dto.userId"</span>,
+    waitTime = <span style="color:#2997ff">3</span>, leaseTime = <span style="color:#2997ff">10</span>)
+<span style="color:#2997ff">@Transactional</span>(rollbackFor = Exception.<span style="color:#ff3b30">class</span>)
+<span style="color:#ff3b30">public void</span> increase(<span style="color:#ffcc00">PointsIncreaseInputDto</span> dto) {
+    Long subId = SessionHolder.getCurrentSubId();
+    String staffId = SessionHolder.getCurrentStaffId();
+
+    <span style="color:#86868b">// 查询或初始化账户</span>
+    <span style="color:#ffcc00">ExpUserPoints</span> account = getOne(
+        <span style="color:#ff3b30">new</span> <span style="color:#ffcc00">LambdaQueryWrapper</span>&lt;&gt;()
+            .eq(ExpUserPoints::getSubId, subId)
+            .eq(ExpUserPoints::getUserId, dto.getUserId()));
+
+    <span style="color:#ff3b30">if</span> (account == <span style="color:#ff3b30">null</span>) {
+        account = <span style="color:#ff3b30">new</span> <span style="color:#ffcc00">ExpUserPoints</span>()
+            .setSubId(subId).setUserId(dto.getUserId())
+            .setBalance(<span style="color:#2997ff">0</span>).setTotalIncrease(<span style="color:#2997ff">0</span>).setTotalConsume(<span style="color:#2997ff">0</span>);
+    }
+
+    <span style="color:#ff3b30">int</span> before = account.getBalance();
+    account.setBalance(before + dto.getPoints());
+    account.setTotalIncrease(account.getTotalIncrease() + dto.getPoints());
+    saveOrUpdate(account);
+
+    <span style="color:#86868b">// 写流水记录</span>
+    recordMapper.insert(<span style="color:#ff3b30">new</span> <span style="color:#ffcc00">ExpUserPointsRecord</span>()
+        .setSubId(subId).setUserId(dto.getUserId())
+        .setChangeType(PointsChangeTypeEnum.INCREASE.getValue())
+        .setPoints(dto.getPoints())
+        .setBeforeBalance(before)
+        .setAfterBalance(account.getBalance())
+        .setStaffId(staffId).setRemark(dto.getRemark()));
+}
+          </div>
+
+          <div class="flex-row gap-2 mt-2" data-f="2" style="flex-wrap:wrap;justify-content:center">
+            <div class="card cn" style="padding:.5rem .8rem;font-size:.78rem;min-width:160px;text-align:center">
+              <div style="font-size:1rem">🔒</div>
+              <strong>@RedissonLock</strong><br>
+              <span class="dim">AOP Order(0) 保证锁在事务外</span>
+            </div>
+            <div class="card cn" style="padding:.5rem .8rem;font-size:.78rem;min-width:160px;text-align:center">
+              <div style="font-size:1rem">🏦</div>
+              <strong>账户自动初始化</strong><br>
+              <span class="dim">首次增加积分时自动创建</span>
+            </div>
+            <div class="card cn" style="padding:.5rem .8rem;font-size:.78rem;min-width:160px;text-align:center">
+              <div style="font-size:1rem">📝</div>
+              <strong>流水记录完整</strong><br>
+              <span class="dim">变动前后余额、操作人、备注</span>
+            </div>
+            <div class="card cn" style="padding:.5rem .8rem;font-size:.78rem;min-width:160px;text-align:center">
+              <div style="font-size:1rem">🔄</div>
+              <strong>SessionHolder</strong><br>
+              <span class="dim">subId、staffId 从 ThreadLocal 读取</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================== 15. 正确性属性 ============================== -->
+      <section class="slide">
+        <div class="flex-col gap-2" style="align-items:center">
+          <div class="section-badge cn">Part 3 · 正确性保障</div>
+          <div class="title-large cn">正确性属性：<span class="gradient-text">形式化验证</span></div>
+          <div class="cn dim" style="max-width:650px;font-size:.88rem;text-align:center">用<strong class="accent">属性（Property）</strong>描述系统不变式，用<strong class="accent">属性测试（PBT）</strong>自动验证</div>
+
+          <div data-f="1" style="max-width:700px;width:100%">
+            <div class="cn" style="font-size:.9rem;font-weight:600;margin-bottom:.5rem">积分模块的 6 条属性</div>
+            <table class="prop-table">
+              <tr><td>属性1</td><td class="cn">非法参数（points≤0）必须被拒绝</td></tr>
+              <tr><td>属性2</td><td class="cn">查询结果必须按 userId+subId 过滤且倒序</td></tr>
+              <tr><td>属性3</td><td class="cn">增加后 balance == before + points</td></tr>
+              <tr><td>属性4</td><td class="cn">余额不足时消耗被拒绝，状态不变</td></tr>
+              <tr><td>属性5</td><td class="cn">消耗后 balance == before - points</td></tr>
+              <tr><td>属性6</td><td class="cn">始终满足 balance == totalIncrease - totalConsume</td></tr>
+            </table>
+          </div>
+
+          <div class="kiro-code mt-2" data-f="2" style="max-width:650px;font-size:.68rem;line-height:1.5">
+<span style="color:#86868b">// Feature: student-points, Property 3</span>
+<span style="color:#86868b">// 增加积分后账户状态正确</span>
+<span style="color:#2997ff">@Property</span>(tries = <span style="color:#2997ff">100</span>)
+<span style="color:#ff3b30">void</span> increaseUpdatesBalanceCorrectly(
+    <span style="color:#2997ff">@ForAll</span> <span style="color:#2997ff">@Positive</span> <span style="color:#ff3b30">int</span> initialBalance,
+    <span style="color:#2997ff">@ForAll</span> <span style="color:#2997ff">@Positive</span> <span style="color:#ff3b30">int</span> delta
+) {
+    <span style="color:#86868b">// 准备账户</span>
+    <span style="color:#ffcc00">ExpUserPoints</span> account = mockAccount(initialBalance);
+    <span style="color:#ffcc00">PointsIncreaseInputDto</span> dto = <span style="color:#ff3b30">new</span> <span style="color:#ffcc00">PointsIncreaseInputDto</span>();
+    dto.setUserId(<span style="color:#2997ff">1L</span>);
+    dto.setPoints(delta);
+
+    service.increase(dto);
+    <span style="color:#ffcc00">ExpUserPoints</span> updated = getAccount(<span style="color:#2997ff">1L</span>);
+
+    <span style="color:#86868b">// 属性3：余额正确</span>
+    assertThat(updated.getBalance())
+        .isEqualTo(initialBalance + delta);
+    <span style="color:#86868b">// 属性6：不变式</span>
+    assertThat(updated.getBalance())
+        .isEqualTo(updated.getTotalIncrease() - updated.getTotalConsume());
+}
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================== 16. 团队协作规范 ============================== -->
+      <section class="slide">
+        <div class="flex-col gap-2" style="align-items:center">
+          <div class="section-badge cn">Part 3 · 团队协作</div>
+          <div class="title-large cn">团队协作：让 AI 成为<span class="gradient-text">团队成员</span></div>
+
+          <div class="flex-row gap-2 mt-2" style="align-items:flex-start;flex-wrap:wrap;justify-content:center">
+            <div data-f="1" style="flex:1;min-width:280px;max-width:380px">
+              <div class="cn" style="font-size:.9rem;font-weight:600;margin-bottom:.5rem">📁 提交到 Git 的文件</div>
+              <div class="git-tree">
+.kiro/
+├── steering/
+│   ├── product.md      <span class="dim">← 产品背景</span>
+│   ├── structure.md    <span class="dim">← 代码规范</span>
+│   └── tech.md         <span class="dim">← 技术栈</span>
+├── specs/
+│   └── student-points/
+│       ├── requirements.md
+│       ├── design.md
+│       └── tasks.md
+└── skills/             <span class="dim">← 工作区 skill</span>
+              </div>
+              <div class="cn dim mt-1" style="font-size:.78rem">全团队共享同一套 AI 行为规范</div>
+            </div>
+
+            <div data-f="2" style="flex:1;min-width:250px;max-width:350px">
+              <div class="cn" style="font-size:.9rem;font-weight:600;margin-bottom:.5rem">🔄 推荐工作流</div>
+              <div class="flex-col gap-2">
+                <div class="card cn" style="padding:.5rem .8rem;font-size:.82rem">
+                  <span class="accent" style="font-weight:700">1</span> 新功能 → 先写 Spec<br>
+                  <span class="dim" style="font-size:.75rem">需求 → 设计 → 任务，对齐后再执行</span>
+                </div>
+                <div class="card cn" style="padding:.5rem .8rem;font-size:.82rem">
+                  <span class="accent" style="font-weight:700">2</span> Code Review → Hook 自动触发<br>
+                  <span class="dim" style="font-size:.75rem">保存文件时自动检查规范合规性</span>
+                </div>
+                <div class="card cn" style="padding:.5rem .8rem;font-size:.82rem">
+                  <span class="accent" style="font-weight:700">3</span> Steering 持续维护<br>
+                  <span class="dim" style="font-size:.75rem">发现新规范 → 更新 steering → 全团队生效</span>
+                </div>
+                <div class="card cn" style="padding:.5rem .8rem;font-size:.82rem">
+                  <span class="accent" style="font-weight:700">4</span> Skill 统一安装<br>
+                  <span class="dim" style="font-size:.75rem">工作区 skill 提交 git，新人 clone 即可用</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================== 17. 效率对比 ============================== -->
+      <section class="slide">
+        <div class="flex-col gap-2" style="align-items:center">
+          <div class="section-badge cn">Part 3 · 效率提升</div>
+          <div class="title-large cn">效率对比：传统 vs <span class="gradient-text">Kiro</span></div>
+
+          <div class="mt-2" data-f="1" style="max-width:800px;width:100%;overflow-x:auto">
+            <table class="eff-table cn">
+              <thead>
+                <tr><th>环节</th><th>传统方式</th><th>Kiro + Spec</th><th>节省</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>需求整理</td><td class="dim">手写文档 2-4h</td><td>对话生成 15min</td><td class="eff-save">~85%</td></tr>
+                <tr><td>技术设计</td><td class="dim">画图写文档 4-8h</td><td>自动生成 20min</td><td class="eff-save">~90%</td></tr>
+                <tr><td>CRUD 代码</td><td class="dim">手写 Entity/DTO/Mapper 2-3h</td><td>任务执行 10min</td><td class="eff-save">~85%</td></tr>
+                <tr><td>规范检查</td><td class="dim">Code Review 人工检查</td><td>Hook 自动触发</td><td class="eff-save">自动化</td></tr>
+                <tr><td>新人上手</td><td class="dim">口口相传 1-2 周</td><td>Steering 即时生效</td><td class="eff-save">知识沉淀</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card cn mt-2 text-center" data-f="2" style="max-width:700px;font-size:.95rem">
+            核心价值：把重复的、规范性的工作交给 AI，<br>让开发者专注在<strong class="accent">业务逻辑和架构决策</strong>上
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================== 18. 落地建议 ============================== -->
+      <section class="slide">
+        <div class="flex-col gap-2" style="align-items:center">
+          <div class="section-badge cn">Part 3 · 落地建议</div>
+          <div class="title-large cn">团队落地<span class="gradient-text">三步走</span></div>
+
+          <div class="landing-steps mt-2">
+            <div class="landing-step" data-f="1">
+              <div class="landing-step-icon">🌱</div>
+              <div class="landing-step-title cn">第一步：完善 Steering</div>
+              <div class="landing-step-desc cn">整理现有代码规范<br>写入 structure.md<br>补充 tech.md 技术栈<br>提交 git 全团队共享</div>
+              <div class="landing-step-time">本周可完成</div>
+            </div>
+            <div class="landing-step" data-f="2">
+              <div class="landing-step-icon">⚡</div>
+              <div class="landing-step-title cn">第二步：新功能用 Spec</div>
+              <div class="landing-step-desc cn">下个迭代选一个功能<br>用 Spec 驱动开发<br>对比传统方式效率<br>收集团队反馈</div>
+              <div class="landing-step-time">下个迭代</div>
+            </div>
+            <div class="landing-step" data-f="3">
+              <div class="landing-step-icon">🚀</div>
+              <div class="landing-step-title cn">第三步：Hook + Skill 扩展</div>
+              <div class="landing-step-desc cn">配置 Code Review Hook<br>安装 unit-testing skill<br>自定义团队专属 skill<br>持续迭代优化</div>
+              <div class="landing-step-time">持续演进</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================== 19. Part 4 分隔页 ============================== -->
+      <section class="slide slide-title">
+        <div class="bg-grid"></div>
+        <div class="text-center" style="position:relative;z-index:1">
+          <div class="part-number">04</div>
+          <div class="title-large cn">Part 4</div>
+          <div class="title-mega cn" style="font-size:clamp(2rem,5vw,3.5rem)"><span class="gradient-text">大预言：OPC时代与新职业</span></div>
+          <div class="subtitle cn">下一个十年，属于一人公司（OPC）的时代，已经彻底来了。</div>
+        </div>
+      </section>
+
+      <!-- ============================== 20. 独立开发者工具栈 ============================== -->
+      <section class="slide">
+        <div class="flex-col gap-2" style="align-items:center">
+          <div class="section-badge cn">Part 4 · 宝藏工具分享</div>
+          <div class="title-large cn">独立开发者必备的<span class="gradient-text">"免费"工具栈</span></div>
+
+          <div class="tool-stack mt-2">
+            <div class="tool-stack-item" data-f="1"><span class="tool-stack-name">Vercel</span> <span class="tool-stack-desc cn">一键部署上线（免费）</span></div>
+            <div class="tool-stack-item" data-f="1"><span class="tool-stack-name">Namecheap</span> <span class="tool-stack-desc cn">域名持有（~1美元/月）</span></div>
+            <div class="tool-stack-item" data-f="2"><span class="tool-stack-name">Cloudflare</span> <span class="tool-stack-desc cn">DNS 解析与 CDN（免费）</span></div>
+            <div class="tool-stack-item" data-f="2"><span class="tool-stack-name">Supabase</span> <span class="tool-stack-desc cn">强大的后端服务（免费）</span></div>
+            <div class="tool-stack-item" data-f="3"><span class="tool-stack-name">Clerk</span> <span class="tool-stack-desc cn">身份与用户认证（免费）</span></div>
+            <div class="tool-stack-item" data-f="3"><span class="tool-stack-name">Sentry</span> <span class="tool-stack-desc cn">线上错误监控（免费）</span></div>
+            <div class="tool-stack-item" data-f="4"><span class="tool-stack-name">Resend</span> <span class="tool-stack-desc cn">触发邮件服务（免费）</span></div>
+            <div class="tool-stack-item" data-f="4"><span class="tool-stack-name">Upstash</span> <span class="tool-stack-desc cn">Serverless Redis 缓存（免费）</span></div>
+            <div class="tool-stack-item" data-f="5"><span class="tool-stack-name">Pinecone</span> <span class="tool-stack-desc cn">AI 应用的向量数据库（免费）</span></div>
+          </div>
+
+          <div class="card cn mt-2 text-center" data-f="6" style="max-width:650px;font-size:.9rem">
+            💡 思考：当技术基建和代码生产趋近于"0门槛"，<br>纯堆代码的 CRUD 价值被无限压缩，<br><strong class="accent">未来有什么新岗位等待着我们？</strong>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================== 21. 新职业 (上) ============================== -->
+      <section class="slide">
+        <div class="flex-col gap-2" style="align-items:center">
+          <div class="section-badge cn">Part 4 · 未来展望</div>
+          <div class="title-large cn">后端的<span class="gradient-text">进阶之路</span></div>
+          <div class="cn dim" style="font-size:.85rem">2027-2030 后端工程师的演变与进阶</div>
+
+          <div class="career-cards mt-2">
+            <div class="career-card" data-f="1">
+              <div class="career-num">1</div>
+              <div class="career-body cn">
+                <div class="career-title">AI编排师（AI Orchestration Designer）</div>
+                <div class="career-desc">从"微服务网关架构师"变成"AI任务流架构师"。将复杂业务拆解为 Spring Boot 服务与 AI Agent 的协作流。</div>
+              </div>
+            </div>
+            <div class="career-card" data-f="2">
+              <div class="career-num">2</div>
+              <div class="career-body cn">
+                <div class="career-title">上下文架构师（Context Architect）</div>
+                <div class="career-desc">从"数据库模型设计"演变为"AI全局语境设计专家（DDD）"。统筹 Steering 文件规范、Redis 缓存上下文、RAG 向量库与 OpenAPI 调用隔离。</div>
+              </div>
+            </div>
+            <div class="career-card" data-f="3">
+              <div class="career-num">3</div>
+              <div class="career-body cn">
+                <div class="career-title">架构规范与输出审计员（AI Output Auditor）</div>
+                <div class="career-desc">从"写 CRUD 的初级码农"升级为"资深 Code Reviewer 和安全卫士"。审查 AI 生成的代码是否漏了分布式事务锁、是否发生数据越权。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================== 22. 新职业 (下) ============================== -->
+      <section class="slide">
+        <div class="flex-col gap-2" style="align-items:center">
+          <div class="section-badge cn">Part 4 · 未来展望</div>
+          <div class="title-large cn">后端的<span class="gradient-text">基建与治理</span></div>
+          <div class="cn dim" style="font-size:.85rem">2027-2030 后端工程师的演变与进阶</div>
+
+          <div class="career-cards mt-2">
+            <div class="career-card" data-f="1">
+              <div class="career-num">4</div>
+              <div class="career-body cn">
+                <div class="career-title">Skill与插件开发者（Skill Developer）</div>
+                <div class="career-desc">从"被动实现 API 的人"变为"AI 内部基建的建设者"。把遗留 Java 服务封装成标准能力集，为团队沉淀研发套件库。</div>
+              </div>
+            </div>
+            <div class="career-card" data-f="2">
+              <div class="career-num">5</div>
+              <div class="career-body cn">
+                <div class="career-title">AI工程化布道师（Human-AI Collaboration Trainer）</div>
+                <div class="career-desc">从研发骨干成长为重塑"研发效能与工作流"的布道者。推进 Spec 驱动开发，告诉团队哪些边界放心交给 AI，哪些核心链路必须人类强管控。</div>
+              </div>
+            </div>
+            <div class="career-card" data-f="3">
+              <div class="career-num">6</div>
+              <div class="career-body cn">
+                <div class="career-title">数据追溯与治理调解员（AI Ethics Mediator）</div>
+                <div class="career-desc">在 AI"黑盒调用"常态化下，负责兜底追踪与数据血缘。从海量日志中剥离业务幻觉与逻辑漏洞，制定补偿脚本。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================== 23. 结束页 ============================== -->
+      <section class="slide slide-title">
+        <div class="bg-grid"></div>
+        <div class="floating-symbols">
+          <span style="left:15%;animation-delay:0s">🧩</span>
+          <span style="left:35%;animation-delay:3s">📋</span>
+          <span style="left:55%;animation-delay:6s">📌</span>
+          <span style="left:75%;animation-delay:1s">⚡</span>
+          <span style="left:90%;animation-delay:5s">🎯</span>
+        </div>
+        <div class="text-center" style="position:relative;z-index:1">
+          <div style="font-size:3rem;margin-bottom:1rem">🎯</div>
+          <div class="title-mega cn" style="font-size:clamp(2rem,5vw,3.5rem)">让 AI 成为你的<br><span class="gradient-text">最强队友</span></div>
+          <div class="cn dim mt-2" style="font-size:.9rem">Steering 沉淀规范 · Spec 驱动开发 · Skill 扩展能力 · Hook 自动化流程</div>
+          <div class="flex-row gap-2 mt-3" style="justify-content:center;flex-wrap:wrap">
+            <span class="tool-badge tool-badge-lg cn">🧩 skills.sh · Skill 生态</span>
+            <span class="tool-badge tool-badge-lg cn">📋 .kiro/specs/ · Spec 文件</span>
+            <span class="tool-badge tool-badge-lg cn">📌 .kiro/steering/ · 团队规范</span>
+            <span class="tool-badge tool-badge-lg cn">⚡ .kiro/hooks/ · 自动化</span>
+          </div>
+          <div class="cn dim mt-3" style="font-size:.85rem">Thanks</div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- iframe overlay for external links -->
+    <div id="iframe-overlay" class="iframe-overlay" style="display:none">
+      <div class="iframe-overlay-bg"></div>
+      <div class="iframe-overlay-content">
+        <div class="device-chrome"></div>
+        <button class="iframe-close interactive" id="iframe-close">✕</button>
+        <iframe id="overlay-iframe" class="overlay-iframe" title="Preview"></iframe>
+      </div>
+    </div>
+
+    <div id="progress"><div id="progress-bar"></div></div>
+    <div id="slide-counter"></div>
+    <div class="nav-hint">← → 翻页 &nbsp;|&nbsp; ↑ ↓ 步进 &nbsp;|&nbsp; ESC 总览 &nbsp;|&nbsp; F 全屏</div>
+
+    <!-- Mobile navigation bar -->
+    <div id="mobile-nav" class="mobile-nav">
+      <button class="mobile-nav-btn" id="mnav-prev" aria-label="上一页">◀</button>
+      <button class="mobile-nav-btn" id="mnav-up" aria-label="上一步">▲</button>
+      <button class="mobile-nav-btn mobile-nav-overview" id="mnav-overview" aria-label="总览">⊞</button>
+      <button class="mobile-nav-btn" id="mnav-down" aria-label="下一步">▼</button>
+      <button class="mobile-nav-btn" id="mnav-next" aria-label="下一页">▶</button>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

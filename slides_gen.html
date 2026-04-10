@@ -1,0 +1,686 @@
+  <div class="slides" id="slides">
+    <!-- SLIDE 1: 封面 -->
+    <div class="slide slide-title">
+      <h2 class="title-large">封面</h2>
+      <div class="mt-4" style="width:100%;">
+        <p class="subtitle">---</p>
+        <p class="subtitle">🤖</p>
+        <p class="subtitle">Team Sharing · 2026</p>
+        <p class="subtitle">Kiro + Skill</p>
+        <p class="subtitle">Java 后端开发实践分享</p>
+        <p class="subtitle">从 Skill 深度使用到 AI 辅助后端开发落地</p>
+        <p class="subtitle">结合 ai-crm 真实项目案例</p>
+        <p class="subtitle">Kiro IDE</p>
+        <p class="subtitle">Skills 生态</p>
+        <p class="subtitle">Java / Spring Boot</p>
+        <p class="subtitle">Spec 驱动开发</p>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: 议程 -->
+    <div class="slide">
+      <h2 class="title-large">议程</h2>
+      <div class="mt-4" style="width:100%;">
+        <p class="subtitle">Agenda</p>
+        <p class="subtitle">今天讲什么</p>
+        <p class="subtitle">三个板块</p>
+        <p class="subtitle">🧩</p>
+        <p class="subtitle">Part 1</p>
+        <p class="subtitle">Skill 快速回顾</p>
+        <p class="subtitle">简易温习核心概念与配置</p>
+        <p class="subtitle">⚡</p>
+        <p class="subtitle">Part 2</p>
+        <p class="subtitle">Skill 深度使用</p>
+        <p class="subtitle">Steering 文件 Spec 驱动开发 Hooks 自动化</p>
+        <p class="subtitle">☕</p>
+        <p class="subtitle">Part 3</p>
+        <p class="subtitle">Java 后端落地</p>
+        <p class="subtitle">ai-crm 真实案例 积分模块全流程 团队协作规范</p>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: Part 1 分隔页 -->
+    <div class="slide">
+      <h2 class="title-large">Part 1 分隔页</h2>
+      <div class="mt-4" style="width:100%;">
+        <p class="subtitle">01</p>
+        <p class="subtitle">Part 1</p>
+        <p class="subtitle">Skill 快速回顾</p>
+        <p class="subtitle">简短温习 Skill 核心机制，我们快速过一遍</p>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: Skill 快速温习 -->
+    <div class="slide">
+      <h2 class="title-large">Skill 快速温习</h2>
+      <div class="mt-4" style="width:100%;">
+        <p class="subtitle">Part 1</p>
+        <p class="subtitle">温故知新：核心概念与最佳实践</p>
+        <p class="subtitle">什么是 Skill？</p>
+        <p class="subtitle">它是可安装的 AI 能力扩展包（SKILL.md），提供即插即用的模块化知识。</p>
+        <p class="subtitle">常用命令速记：</p>
+        <p class="subtitle">搜索：`npx skills find java`</p>
+        <p class="subtitle">安装到工作区：`npx skills add owner/repo@skill-name`</p>
+        <p class="subtitle">全局安装（个人工具）：`npx skills add owner/repo@skill-name -g`</p>
+        <p class="subtitle">🏅 **团队最佳实践复习**</p>
+        <p class="subtitle">业务和项目规范类的 Skill，务必要安装在工作区（`.agents/skills/`）并提交到 git！这样能保证全团队使用这套规范的拉齐。</p>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: Part 2 分隔页 -->
+    <div class="slide">
+      <h2 class="title-large">Part 2 分隔页</h2>
+      <div class="mt-4" style="width:100%;">
+        <p class="subtitle">02</p>
+        <p class="subtitle">Part 2</p>
+        <p class="subtitle">Skill 深度使用</p>
+        <p class="subtitle">Steering · Spec 驱动开发 · Hooks 自动化</p>
+      </div>
+    </div>
+
+    <!-- SLIDE 6: Steering 文件 -->
+    <div class="slide">
+      <h2 class="title-large">Steering 文件</h2>
+      <div class="mt-4" style="width:100%;">
+        <p class="subtitle">Part 2 · Steering</p>
+        <p class="subtitle">Steering：让 AI 了解你的项目</p>
+        <p class="subtitle">Steering 文件是放在  .kiro/steering/  下的 Markdown，</p>
+        <p class="subtitle">每次对话都会自动注入给 Kiro，相当于给 AI 的 永久上下文 。</p>
+        <p class="subtitle">📌</p>
+        <p class="subtitle">always（默认）</p>
+        <p class="subtitle">每次对话都注入，适合项目规范、架构说明</p>
+        <p class="subtitle">📂</p>
+        <p class="subtitle">fileMatch</p>
+        <p class="subtitle">匹配特定文件时注入，如编辑 *.sql 时注入 DB 规范</p>
+        <p class="subtitle">🔑</p>
+        <p class="subtitle">manual</p>
+        <p class="subtitle">用 # 手动引用，按需加载，节省上下文</p>
+        <p class="subtitle">你们项目的 Steering</p>
+        <p class="subtitle"># .kiro/steering/structure.md</p>
+      </div>
+    </div>
+
+    <!-- SLIDE 7:  -->
+    <div class="slide">
+      <div class="mt-4" style="width:100%;">
+        <p class="subtitle">inclusion: always</p>
+      </div>
+    </div>
+
+    <!-- SLIDE 8:  -->
+    <div class="slide">
+      <div class="mt-4" style="width:100%;">
+        <p class="subtitle"># 项目结构规范</p>
+        <div class="kiro-step"><div class="kiro-step-icon"></div><div class="step-content"><p>所有枚举必须实现 BaseEnum</p></div></div>
+        <div class="kiro-step"><div class="kiro-step-icon"></div><div class="step-content"><p>InputDto 必须以 InputDto 结尾</p></div></div>
+        <div class="kiro-step"><div class="kiro-step-icon"></div><div class="step-content"><p>所有表必须有 appid 字段（多租户）</p></div></div>
+        <div class="kiro-step"><div class="kiro-step-icon"></div><div class="step-content"><p>Session 上下文从 SessionHolder 读取</p></div></div>
+        <div class="kiro-step"><div class="kiro-step-icon"></div><div class="step-content"><p>禁止在 Service 中写参数校验逻辑</p></div></div>
+        <p class="subtitle">💡 有了 Steering，Kiro 生成的每一行代码都自动遵守团队规范，</p>
+        <p class="subtitle">不需要每次对话都重复说明约定</p>
+      </div>
+    </div>
+
+    <!-- SLIDE 9: Steering 实战效果 -->
+    <div class="slide">
+      <h2 class="title-large">Steering 实战效果</h2>
+      <div class="mt-4" style="width:100%;">
+        <p class="subtitle">Part 2 · Steering</p>
+        <p class="subtitle">Steering 实战：规范自动落地</p>
+        <p class="subtitle">❌ 没有 Steering</p>
+        <div class="kiro-code" style="margin-bottom:8px;">// AI 可能生成这样的代码</div>
+        <div class="kiro-code" style="margin-bottom:8px;">public class   UserDto  {</div>
+        <div class="kiro-code" style="margin-bottom:8px;">private  Integer userId;   // 没有 @ApiModelProperty</div>
+        <div class="kiro-code" style="margin-bottom:8px;">private  String name;      // 没有校验注解</div>
+        <p class="subtitle">}</p>
+        <div class="kiro-code" style="margin-bottom:8px;">public enum   StatusEnum  {   // 没实现 BaseEnum</div>
+        <p class="subtitle">ACTIVE, INACTIVE</p>
+        <p class="subtitle">}</p>
+        <div class="kiro-code" style="margin-bottom:8px;">// Service 里写了参数校验</div>
+        <p class="subtitle">if  (dto.getUserId() ==  null ) {</p>
+        <p class="subtitle">throw new   Exception ( "userId不能为空" );</p>
+        <p class="subtitle">}</p>
+        <p class="subtitle">✅ 有 Steering 自动生成</p>
+        <div class="kiro-code" style="margin-bottom:8px;">// Kiro 自动遵守所有规范</div>
+        <div class="kiro-code" style="margin-bottom:8px;">@Data</div>
+        <div class="kiro-code" style="margin-bottom:8px;">public class   UserInputDto  {</div>
+        <div class="kiro-code" style="margin-bottom:8px;">@ApiModelProperty ( "应用ID" )</div>
+        <div class="kiro-code" style="margin-bottom:8px;">@NotNull (message =  "appId不能为空" )</div>
+        <div class="kiro-code" style="margin-bottom:8px;">private  Integer appid;</div>
+        <div class="kiro-code" style="margin-bottom:8px;">@ApiModelProperty ( "用户ID" )</div>
+        <div class="kiro-code" style="margin-bottom:8px;">@NotNull (message =  "userId不能为空" )</div>
+        <div class="kiro-code" style="margin-bottom:8px;">private  Long userId;</div>
+        <p class="subtitle">}</p>
+        <div class="kiro-code" style="margin-bottom:8px;">public enum   StatusEnum   implements   BaseEnum  {</div>
+        <p class="subtitle">ACTIVE( 1 ,  "启用" ), INACTIVE( 0 ,  "禁用" );</p>
+        <div class="kiro-code" style="margin-bottom:8px;">// getValue() + getDesc() 自动实现</div>
+        <p class="subtitle">}</p>
+      </div>
+    </div>
+
+    <!-- SLIDE 10: Steering 实战对比 例2 枚举+Controller -->
+    <div class="slide">
+      <h2 class="title-large">Steering 实战对比 例2 枚举+Controller</h2>
+      <div class="mt-4" style="width:100%;">
+        <p class="subtitle">Part 2 · Steering 实战</p>
+        <p class="subtitle">Steering 实战：枚举 &amp; Controller</p>
+        <p class="subtitle">❌ 没有 Steering</p>
+        <div class="kiro-code" style="margin-bottom:8px;">// 枚举：没实现 BaseEnum，用裸数字</div>
+        <div class="kiro-code" style="margin-bottom:8px;">public enum   WorkOrderStatusEnum  {</div>
+        <p class="subtitle">PENDING, PROCESSING, DONE</p>
+        <p class="subtitle">}</p>
+        <div class="kiro-code" style="margin-bottom:8px;">// Service 里直接比较数字</div>
+        <p class="subtitle">if  (workOrder.getStatus() ==  1 ) {</p>
+        <div class="kiro-code" style="margin-bottom:8px;">// 1 是什么？没人知道</div>
+        <p class="subtitle">}</p>
+        <div class="kiro-code" style="margin-bottom:8px;">// InputDto：枚举字段没有 @CheckEnum</div>
+        <div class="kiro-code" style="margin-bottom:8px;">@Data</div>
+        <div class="kiro-code" style="margin-bottom:8px;">public class   WorkOrderQueryInputDto  {</div>
+        <div class="kiro-code" style="margin-bottom:8px;">// 传入 status=999 也不会报错！</div>
+        <div class="kiro-code" style="margin-bottom:8px;">private  Integer status;</div>
+        <div class="kiro-code" style="margin-bottom:8px;">private  Integer workOrderType;</div>
+        <p class="subtitle">}</p>
+        <p class="subtitle">传入非法枚举值 status=999，Service 层拿到脏数据，查询结果为空却不报错，排查困难</p>
+        <p class="subtitle">✅ 有 Steering 自动生成</p>
+        <div class="kiro-code" style="margin-bottom:8px;">// 枚举：自动实现 BaseEnum</div>
+        <div class="kiro-code" style="margin-bottom:8px;">public enum   WorkOrderStatusEnum   implements   BaseEnum  {</div>
+        <p class="subtitle">PENDING( 0 ,  "待处理" ), PROCESSING( 1 ,  "处理中" ),</p>
+        <p class="subtitle">DONE( 2 ,  "已完成" );</p>
+        <p class="subtitle">}</p>
+        <div class="kiro-code" style="margin-bottom:8px;">// InputDto：枚举字段自动加 @CheckEnum</div>
+        <div class="kiro-code" style="margin-bottom:8px;">@Data</div>
+        <div class="kiro-code" style="margin-bottom:8px;">public class   WorkOrderQueryInputDto  {</div>
+        <div class="kiro-code" style="margin-bottom:8px;">@ApiModelProperty ( "工单状态，参见 WorkOrderStatusEnum" )</div>
+        <div class="kiro-code" style="margin-bottom:8px;">@CheckEnum (value = WorkOrderStatusEnum. class ,</div>
+        <p class="subtitle">message =  "工单状态不合法" )</p>
+        <div class="kiro-code" style="margin-bottom:8px;">private  Integer status;</div>
+        <div class="kiro-code" style="margin-bottom:8px;">@ApiModelProperty ( "工单类型，参见 WorkOrderTypeEnum" )</div>
+        <div class="kiro-code" style="margin-bottom:8px;">@CheckEnum (value = WorkOrderTypeEnum. class ,</div>
+        <p class="subtitle">message =  "工单类型不合法" )</p>
+        <div class="kiro-code" style="margin-bottom:8px;">private  Integer workOrderType;</div>
+        <p class="subtitle">}</p>
+        <p class="subtitle">传入 status=999 → 接口层直接返回参数错误，非法值在入口被拦截，Service 永远拿到合法数据</p>
+      </div>
+    </div>
+
+    <!-- SLIDE 11: Spec 驱动开发概念 -->
+    <div class="slide">
+      <h2 class="title-large">Spec 驱动开发概念</h2>
+      <div class="mt-4" style="width:100%;">
+        <p class="subtitle">Part 2 · Spec</p>
+        <p class="subtitle">Spec 驱动开发</p>
+        <p class="subtitle">从需求到代码的结构化工作流</p>
+        <p class="subtitle">📋</p>
+        <p class="subtitle">requirements.md</p>
+        <p class="subtitle">需求文档</p>
+        <p class="subtitle">🏗️</p>
+        <p class="subtitle">design.md</p>
+        <p class="subtitle">技术设计</p>
+        <p class="subtitle">✅</p>
+        <p class="subtitle">tasks.md</p>
+        <p class="subtitle">实现任务</p>
+        <p class="subtitle">⚡</p>
+        <p class="subtitle">Execute</p>
+        <p class="subtitle">自动执行</p>
+        <p class="subtitle">📋 requirements.md</p>
+        <p class="subtitle">用户故事 + 验收标准，用自然语言描述"做什么"，Kiro 帮你整理成结构化需求</p>
+        <p class="subtitle">🏗️ design.md</p>
+        <p class="subtitle">架构设计、数据模型、接口定义、正确性属性，Kiro 根据需求自动生成技术方案</p>
+        <p class="subtitle">✅ tasks.md</p>
+        <p class="subtitle">可执行的任务清单，每个任务对应具体代码文件，支持一键"Run All Tasks"</p>
+        <p class="subtitle">💡 Spec 文件存放在  .kiro/specs/{feature-name}/ ，提交 git 后全团队可见，是需求 + 设计 + 实现的完整记录</p>
+      </div>
+    </div>
+
+    <!-- SLIDE 12: Hooks 自动化 -->
+    <div class="slide">
+      <h2 class="title-large">Hooks 自动化</h2>
+      <div class="mt-4" style="width:100%;">
+        <p class="subtitle">Part 2 · Hooks</p>
+        <p class="subtitle">Hooks：事件驱动的自动化</p>
+        <p class="subtitle">Hook 在 IDE 事件发生时自动触发 AI 动作， 把重复的检查工作变成 自动流程 。</p>
+        <p class="subtitle">常用触发事件</p>
+        <p class="subtitle">事件</p>
+        <p class="subtitle">触发时机</p>
+        <p class="subtitle">fileEdited</p>
+        <p class="subtitle">保存文件时</p>
+        <p class="subtitle">preToolUse</p>
+        <p class="subtitle">AI 执行工具前</p>
+        <p class="subtitle">postTaskExecution</p>
+        <p class="subtitle">Spec 任务完成后</p>
+        <p class="subtitle">userTriggered</p>
+        <p class="subtitle">手动点击触发</p>
+        <p class="subtitle">agentStop</p>
+        <p class="subtitle">AI 执行结束后</p>
+        <p class="subtitle">实用 Hook 示例</p>
+        <div class="kiro-code" style="margin-bottom:8px;">// 保存 Java 文件时自动 Code Review</div>
+        <p class="subtitle">{</p>
+        <p class="subtitle">"name" :  "Java Code Review" ,</p>
+        <p class="subtitle">"version" :  "1.0.0" ,</p>
+        <p class="subtitle">"when" : {</p>
+        <p class="subtitle">"type" :  "fileEdited" ,</p>
+        <p class="subtitle">"patterns" : [ "**/*.java" ]</p>
+        <p class="subtitle">},</p>
+        <p class="subtitle">"then" : {</p>
+        <p class="subtitle">"type" :  "askAgent" ,</p>
+        <p class="subtitle">"prompt" :  "检查是否遵守团队规范：</p>
+        <p class="subtitle">1. 枚举是否实现 BaseEnum</p>
+        <p class="subtitle">2. InputDto 是否有 @ApiModelProperty</p>
+        <p class="subtitle">3. 是否有 appid 字段</p>
+        <p class="subtitle">4. Service 是否有参数校验逻辑（应移到 DTO）"</p>
+        <p class="subtitle">}</p>
+        <p class="subtitle">}</p>
+      </div>
+    </div>
+
+    <!-- SLIDE 13: Part 3 分隔页 -->
+    <div class="slide">
+      <h2 class="title-large">Part 3 分隔页</h2>
+      <div class="mt-4" style="width:100%;">
+        <p class="subtitle">03</p>
+        <p class="subtitle">Part 3</p>
+        <p class="subtitle">Java 后端落地实践</p>
+        <p class="subtitle">以 ai-crm 学员积分模块为例</p>
+        <p class="subtitle">完整演示 Spec 驱动开发全流程</p>
+      </div>
+    </div>
+
+    <!-- SLIDE 14: 需求 2：增加积分 -->
+    <div class="slide">
+      <h2 class="title-large">需求 2：增加积分</h2>
+      <div class="mt-4" style="width:100%;">
+        <p class="subtitle">Part 3 · Step 1</p>
+        <p class="subtitle">Step 1：用自然语言描述需求</p>
+        <p class="subtitle">告诉 Kiro 你要做什么，它帮你整理成</p>
+        <p class="subtitle">结构化需求文档</p>
+        <p class="subtitle">💬 你对 Kiro 说：</p>
+        <p class="subtitle">"给学员积分系统写个 spec，需要三个接口：</p>
+        <p class="subtitle">积分记录分页查询、增加积分、消耗积分。</p>
+        <p class="subtitle">积分变动要记录流水，并发安全要保证。"</p>
+        <p class="subtitle">✅ Kiro 生成：</p>
+        <p class="subtitle">4 个结构化需求（含用户故事）</p>
+        <p class="subtitle">每个需求的验收标准（WHEN/THEN 格式）</p>
+        <p class="subtitle">术语表（ExpUser、SubId 等）</p>
+        <p class="subtitle">数据一致性需求</p>
+        <p class="subtitle">生成的需求示例</p>
+        <p class="subtitle">用户故事： 作为销售顾问，我希望能为指定</p>
+        <p class="subtitle">学员增加积分，以便通过积分激励学员参与</p>
+        <p class="subtitle">课程活动。</p>
+        <p class="subtitle">验收标准：</p>
+        <p class="subtitle">1. WHEN 调用增加积分接口时，THE Controller</p>
+        <p class="subtitle">SHALL 接收 userId（必填）、points（最小1）、</p>
+        <p class="subtitle">remark（可选，最大200字）</p>
+        <p class="subtitle">2. WHEN 请求合法时，THE Service SHALL 使用</p>
+        <p class="subtitle">分布式锁（以 userId 为锁 key）保证并发安全</p>
+        <p class="subtitle">3. WHILE 持有锁，THE Service SHALL 查询或</p>
+        <p class="subtitle">初始化积分账户，将余额加上增量</p>
+        <p class="subtitle">4. WHILE 持有锁，THE Service SHALL 新增</p>
+        <p class="subtitle">changeType=INCREASE 的流水记录</p>
+      </div>
+    </div>
+
+    <!-- SLIDE 15: Step 2 - 技术设计 -->
+    <div class="slide">
+      <h2 class="title-large">Step 2 - 技术设计</h2>
+      <div class="mt-4" style="width:100%;">
+        <p class="subtitle">Part 3 · Step 2</p>
+        <p class="subtitle">Step 2：自动生成技术设计</p>
+        <p class="subtitle">design.md 包含什么</p>
+        <p class="subtitle">🏗️</p>
+        <p class="subtitle">架构分层图</p>
+        <p class="subtitle">Controller → Service → Mapper 调用链，AOP 横切关注点</p>
+        <p class="subtitle">📊</p>
+        <p class="subtitle">数据模型 + DDL</p>
+        <p class="subtitle">实体类定义、建表 SQL、索引设计，自动遵守 appid 多租户规范</p>
+        <p class="subtitle">🔄</p>
+        <p class="subtitle">业务流程伪代码</p>
+        <p class="subtitle">增加/消耗积分的完整执行步骤，含锁和事务边界</p>
+        <p class="subtitle">✅</p>
+        <p class="subtitle">正确性属性（6条）</p>
+        <p class="subtitle">形式化描述系统不变式，作为属性测试的依据</p>
+        <p class="subtitle">自动生成的实体类</p>
+        <div class="kiro-code" style="margin-bottom:8px;">@Data</div>
+        <div class="kiro-code" style="margin-bottom:8px;">@TableName ( "exp_user_points" )</div>
+        <div class="kiro-code" style="margin-bottom:8px;">public class   ExpUserPoints   extends   EntityBase  {</div>
+        <div class="kiro-code" style="margin-bottom:8px;">@TableId (type = IdType.AUTO)</div>
+        <div class="kiro-code" style="margin-bottom:8px;">private  Long id;</div>
+        <div class="kiro-code" style="margin-bottom:8px;">@ApiModelProperty ( "租户ID" )</div>
+        <div class="kiro-code" style="margin-bottom:8px;">private  Long subId;</div>
+        <div class="kiro-code" style="margin-bottom:8px;">@ApiModelProperty ( "学员ID" )</div>
+        <div class="kiro-code" style="margin-bottom:8px;">private  Long userId;</div>
+        <div class="kiro-code" style="margin-bottom:8px;">@ApiModelProperty ( "当前余额 = totalIncrease - totalConsume" )</div>
+        <div class="kiro-code" style="margin-bottom:8px;">private  Integer balance;</div>
+        <div class="kiro-code" style="margin-bottom:8px;">@ApiModelProperty ( "累计增加积分" )</div>
+        <div class="kiro-code" style="margin-bottom:8px;">private  Integer totalIncrease;</div>
+        <div class="kiro-code" style="margin-bottom:8px;">@ApiModelProperty ( "累计消耗积分" )</div>
+        <div class="kiro-code" style="margin-bottom:8px;">private  Integer totalConsume;</div>
+        <p class="subtitle">}</p>
+      </div>
+    </div>
+
+    <!-- SLIDE 16: Tasks -->
+    <div class="slide">
+      <h2 class="title-large">Tasks</h2>
+      <div class="mt-4" style="width:100%;">
+        <p class="subtitle">Part 3 · Step 3</p>
+        <p class="subtitle">Step 3：任务清单 + 一键执行</p>
+        <p class="subtitle">tasks.md 结构</p>
+        <div class="kiro-step"><div class="kiro-step-icon"></div><div class="step-content"><p>[x] 1. 数据库 DDL 脚本</p></div></div>
+        <div class="kiro-step"><div class="kiro-step-icon"></div><div class="step-content"><p>创建 exp_user_points 表</p></div></div>
+        <div class="kiro-step"><div class="kiro-step-icon"></div><div class="step-content"><p>创建 exp_user_points_record 表</p></div></div>
+        <div class="kiro-step"><div class="kiro-step-icon"></div><div class="step-content"><p>[x] 2. 枚举与错误码</p></div></div>
+        <div class="kiro-step"><div class="kiro-step-icon"></div><div class="step-content"><p>[x] 2.1 PointsChangeTypeEnum</p></div></div>
+        <div class="kiro-step"><div class="kiro-step-icon"></div><div class="step-content"><p>[x] 2.2 ErrorCode.POINTS_INSUFFICIENT</p></div></div>
+        <div class="kiro-step"><div class="kiro-step-icon"></div><div class="step-content"><p>[x] 3. 实体类</p></div></div>
+        <div class="kiro-step"><div class="kiro-step-icon"></div><div class="step-content"><p>[x] 3.1 ExpUserPoints</p></div></div>
+        <div class="kiro-step"><div class="kiro-step-icon"></div><div class="step-content"><p>[x] 3.2 ExpUserPointsRecord</p></div></div>
+        <div class="kiro-step"><div class="kiro-step-icon"></div><div class="step-content"><p>[x] 7. Service 实现</p></div></div>
+        <div class="kiro-step"><div class="kiro-step-icon"></div><div class="step-content"><p>[x] 7.2 increase 方法</p></div></div>
+        <div class="kiro-step"><div class="kiro-step-icon"></div><div class="step-content"><p>[x] 7.4 consume 方法</p></div></div>
+        <div class="kiro-step"><div class="kiro-step-icon"></div><div class="step-content"><p>[ ]* 7.3 属性测试（可选）</p></div></div>
+        <div class="kiro-step"><div class="kiro-step-icon"></div><div class="step-content"><p>[x] 9. Controller 实现</p></div></div>
+        <p class="subtitle">执行方式</p>
+        <p class="subtitle">1</p>
+        <p class="subtitle">Run All Tasks</p>
+        <p class="subtitle">Kiro 按顺序执行所有任务，自动写代码、建文件</p>
+        <p class="subtitle">2</p>
+        <p class="subtitle">Execute Task N</p>
+        <p class="subtitle">单独执行某个任务，适合增量开发或重新生成</p>
+        <p class="subtitle">3</p>
+        <p class="subtitle">状态追踪</p>
+        <p class="subtitle">[ ] 未开始 → [-] 进行中 → [x] 完成，全程可见</p>
+        <p class="subtitle">标注  *  的任务是可选任务（如属性测试），</p>
+        <p class="subtitle">MVP 阶段可跳过，不影响主流程执行</p>
+      </div>
+    </div>
+
+    <!-- SLIDE 17: 核心代码展示 - Service -->
+    <div class="slide">
+      <h2 class="title-large">核心代码展示 - Service</h2>
+      <div class="mt-4" style="width:100%;">
+        <p class="subtitle">Part 3 · 代码展示</p>
+        <p class="subtitle">Kiro 生成的 Service 代码</p>
+        <p class="subtitle">增加积分（含分布式锁）</p>
+        <div class="kiro-code" style="margin-bottom:8px;">@RedissonLock (key =  "#dto.userId" ,</div>
+        <p class="subtitle">waitTime =  3 , leaseTime =  10 )</p>
+        <div class="kiro-code" style="margin-bottom:8px;">@Transactional (rollbackFor = Exception. class )</div>
+        <div class="kiro-code" style="margin-bottom:8px;">public void  increase( PointsIncreaseInputDto  dto) {</div>
+        <p class="subtitle">Long subId = SessionHolder.getCurrentSubId();</p>
+        <p class="subtitle">String staffId = SessionHolder.getCurrentStaffId();</p>
+        <div class="kiro-code" style="margin-bottom:8px;">// 查询或初始化账户</div>
+        <p class="subtitle">ExpUserPoints  account = getOne(</p>
+        <p class="subtitle">new   LambdaQueryWrapper &lt;&gt;()</p>
+        <p class="subtitle">.eq( ExpUserPoints ::getSubId, subId)</p>
+        <p class="subtitle">.eq( ExpUserPoints ::getUserId, dto.getUserId())</p>
+        <p class="subtitle">);</p>
+        <p class="subtitle">if  (account ==  null ) {</p>
+        <p class="subtitle">account =  new   ExpUserPoints ()</p>
+        <p class="subtitle">.setSubId(subId).setUserId(dto.getUserId())</p>
+        <p class="subtitle">.setBalance( 0 ).setTotalIncrease( 0 )</p>
+        <p class="subtitle">.setTotalConsume( 0 );</p>
+        <p class="subtitle">}</p>
+        <p class="subtitle">int  before = account.getBalance();</p>
+        <p class="subtitle">account.setBalance(before + dto.getPoints());</p>
+        <p class="subtitle">account.setTotalIncrease(</p>
+        <p class="subtitle">account.getTotalIncrease() + dto.getPoints());</p>
+        <p class="subtitle">saveOrUpdate(account);</p>
+        <div class="kiro-code" style="margin-bottom:8px;">// 写流水记录</div>
+        <p class="subtitle">recordMapper.insert( new   ExpUserPointsRecord ()</p>
+        <p class="subtitle">.setSubId(subId).setUserId(dto.getUserId())</p>
+        <p class="subtitle">.setChangeType( PointsChangeTypeEnum .INCREASE.getValue())</p>
+        <p class="subtitle">.setPoints(dto.getPoints())</p>
+        <p class="subtitle">.setBeforeBalance(before)</p>
+        <p class="subtitle">.setAfterBalance(account.getBalance())</p>
+        <p class="subtitle">.setStaffId(staffId).setRemark(dto.getRemark()));</p>
+        <p class="subtitle">}</p>
+        <p class="subtitle">代码亮点</p>
+        <p class="subtitle">🔒</p>
+        <div class="kiro-code" style="margin-bottom:8px;">@RedissonLock 在事务外加锁</div>
+        <p class="subtitle">AOP Order(0) 保证锁在事务外，防止锁释放后数据未提交</p>
+        <p class="subtitle">🏦</p>
+        <p class="subtitle">账户自动初始化</p>
+        <p class="subtitle">首次增加积分时自动创建账户，无需提前初始化</p>
+        <p class="subtitle">📝</p>
+        <p class="subtitle">流水记录完整</p>
+        <p class="subtitle">记录变动前后余额、操作人、备注，完整审计链路</p>
+        <p class="subtitle">🔄</p>
+        <p class="subtitle">SessionHolder 获取上下文</p>
+        <p class="subtitle">subId、staffId 从 ThreadLocal 读取，不作为接口参数</p>
+      </div>
+    </div>
+
+    <!-- SLIDE 18: 正确性属性 -->
+    <div class="slide">
+      <h2 class="title-large">正确性属性</h2>
+      <div class="mt-4" style="width:100%;">
+        <p class="subtitle">Part 3 · 正确性保障</p>
+        <p class="subtitle">正确性属性：形式化验证</p>
+        <p class="subtitle">Spec 驱动开发的核心亮点：</p>
+        <p class="subtitle">用 属性（Property） 描述系统不变式，</p>
+        <p class="subtitle">用 属性测试（PBT） 自动验证</p>
+        <p class="subtitle">积分模块的 6 条属性</p>
+        <p class="subtitle">属性1 非法参数（points≤0）必须被拒绝</p>
+        <p class="subtitle">属性2 查询结果必须按 userId+subId 过滤且倒序</p>
+        <p class="subtitle">属性3 增加后 balance == before + points</p>
+        <p class="subtitle">属性4 余额不足时消耗被拒绝，状态不变</p>
+        <p class="subtitle">属性5 消耗后 balance == before - points</p>
+        <p class="subtitle">属性6 始终满足 balance == totalIncrease - totalConsume</p>
+        <p class="subtitle">jqwik 属性测试示例</p>
+        <div class="kiro-code" style="margin-bottom:8px;">// Feature: student-points, Property 3</div>
+        <div class="kiro-code" style="margin-bottom:8px;">// 增加积分后账户状态正确</div>
+        <div class="kiro-code" style="margin-bottom:8px;">@Property (tries =  100 )</div>
+        <p class="subtitle">void  increaseUpdatesBalanceCorrectly(</p>
+        <div class="kiro-code" style="margin-bottom:8px;">@ForAll @Positive   int  initialBalance,</div>
+        <div class="kiro-code" style="margin-bottom:8px;">@ForAll @Positive   int  delta</div>
+        <p class="subtitle">) {</p>
+        <div class="kiro-code" style="margin-bottom:8px;">// 准备账户</div>
+        <p class="subtitle">ExpUserPoints  account = mockAccount(initialBalance);</p>
+        <p class="subtitle">PointsIncreaseInputDto  dto =  new   PointsIncreaseInputDto ();</p>
+        <p class="subtitle">dto.setUserId( 1L );</p>
+        <p class="subtitle">dto.setPoints(delta);</p>
+        <p class="subtitle">service.increase(dto);</p>
+        <p class="subtitle">ExpUserPoints  updated = getAccount( 1L );</p>
+        <div class="kiro-code" style="margin-bottom:8px;">// 属性3：余额正确</div>
+        <p class="subtitle">assertThat(updated.getBalance())</p>
+        <p class="subtitle">.isEqualTo(initialBalance + delta);</p>
+        <div class="kiro-code" style="margin-bottom:8px;">// 属性6：不变式</div>
+        <p class="subtitle">assertThat(updated.getBalance())</p>
+        <p class="subtitle">.isEqualTo(updated.getTotalIncrease()</p>
+        <div class="kiro-step"><div class="kiro-step-icon"></div><div class="step-content"><p>updated.getTotalConsume());</p></div></div>
+        <p class="subtitle">}</p>
+      </div>
+    </div>
+
+    <!-- SLIDE 19: 团队协作规范 -->
+    <div class="slide">
+      <h2 class="title-large">团队协作规范</h2>
+      <div class="mt-4" style="width:100%;">
+        <p class="subtitle">Part 3 · 团队协作</p>
+        <p class="subtitle">团队协作：让 AI 成为团队成员</p>
+        <p class="subtitle">📁 提交到 Git 的文件</p>
+        <p class="subtitle">.kiro/</p>
+        <p class="subtitle">├── steering/</p>
+        <p class="subtitle">│   ├── product.md      ← 产品背景</p>
+        <p class="subtitle">│   ├── structure.md    ← 代码规范</p>
+        <p class="subtitle">│   └── tech.md         ← 技术栈</p>
+        <p class="subtitle">├── specs/</p>
+        <p class="subtitle">│   └── student-points/</p>
+        <p class="subtitle">│       ├── requirements.md</p>
+        <p class="subtitle">│       ├── design.md</p>
+        <p class="subtitle">│       └── tasks.md</p>
+        <p class="subtitle">└── skills/             ← 工作区 skill</p>
+        <p class="subtitle">全团队共享同一套 AI 行为规范</p>
+        <p class="subtitle">🔄 推荐工作流</p>
+        <p class="subtitle">1</p>
+        <p class="subtitle">新功能 → 先写 Spec</p>
+        <p class="subtitle">需求 → 设计 → 任务，对齐后再执行</p>
+        <p class="subtitle">2</p>
+        <p class="subtitle">Code Review → Hook 自动触发</p>
+        <p class="subtitle">保存文件时自动检查规范合规性</p>
+        <p class="subtitle">3</p>
+        <p class="subtitle">Steering 持续维护</p>
+        <p class="subtitle">发现新规范 → 更新 steering → 全团队生效</p>
+        <p class="subtitle">4</p>
+        <p class="subtitle">Skill 统一安装</p>
+        <p class="subtitle">工作区 skill 提交 git，新人 clone 即可用</p>
+      </div>
+    </div>
+
+    <!-- SLIDE 20: 效率对比 -->
+    <div class="slide">
+      <h2 class="title-large">效率对比</h2>
+      <div class="mt-4" style="width:100%;">
+        <p class="subtitle">Part 3 · 效率提升</p>
+        <p class="subtitle">效率对比：传统 vs Kiro</p>
+        <p class="subtitle">环节</p>
+        <p class="subtitle">传统方式</p>
+        <p class="subtitle">Kiro + Spec</p>
+        <p class="subtitle">节省</p>
+        <p class="subtitle">需求整理</p>
+        <p class="subtitle">手写文档 2-4h</p>
+        <p class="subtitle">对话生成 15min</p>
+        <p class="subtitle">~85%</p>
+        <p class="subtitle">技术设计</p>
+        <p class="subtitle">画图写文档 4-8h</p>
+        <p class="subtitle">自动生成 20min</p>
+        <p class="subtitle">~90%</p>
+        <p class="subtitle">CRUD 代码</p>
+        <p class="subtitle">手写 Entity/DTO/Mapper 2-3h</p>
+        <p class="subtitle">任务执行 10min</p>
+        <p class="subtitle">~85%</p>
+        <p class="subtitle">规范检查</p>
+        <p class="subtitle">Code Review 人工检查</p>
+        <p class="subtitle">Hook 自动触发</p>
+        <p class="subtitle">自动化</p>
+        <p class="subtitle">新人上手</p>
+        <p class="subtitle">口口相传 1-2 周</p>
+        <p class="subtitle">Steering 即时生效</p>
+        <p class="subtitle">知识沉淀</p>
+        <p class="subtitle">核心价值：把重复的、规范性的工作交给 AI，让开发者专注在业务逻辑和架构决策上</p>
+      </div>
+    </div>
+
+    <!-- SLIDE 21: 落地建议 -->
+    <div class="slide">
+      <h2 class="title-large">落地建议</h2>
+      <div class="mt-4" style="width:100%;">
+        <p class="subtitle">Part 3 · 落地建议</p>
+        <p class="subtitle">团队落地三步走</p>
+        <p class="subtitle">🌱</p>
+        <p class="subtitle">第一步</p>
+        <p class="subtitle">完善 Steering</p>
+        <p class="subtitle">整理现有代码规范</p>
+        <p class="subtitle">写入 structure.md</p>
+        <p class="subtitle">补充 tech.md 技术栈</p>
+        <p class="subtitle">提交 git 全团队共享</p>
+        <p class="subtitle">本周可完成</p>
+        <p class="subtitle">⚡</p>
+        <p class="subtitle">第二步</p>
+        <p class="subtitle">新功能用 Spec</p>
+        <p class="subtitle">下个迭代选一个功能</p>
+        <p class="subtitle">用 Spec 驱动开发</p>
+        <p class="subtitle">对比传统方式效率</p>
+        <p class="subtitle">收集团队反馈</p>
+        <p class="subtitle">下个迭代</p>
+        <p class="subtitle">🚀</p>
+        <p class="subtitle">第三步</p>
+        <p class="subtitle">Hook + Skill 扩展</p>
+        <p class="subtitle">配置 Code Review Hook</p>
+        <p class="subtitle">安装 unit-testing skill</p>
+        <p class="subtitle">自定义团队专属 skill</p>
+        <p class="subtitle">持续迭代优化</p>
+        <p class="subtitle">持续演进</p>
+      </div>
+    </div>
+
+    <!-- SLIDE 22: Part 4 分隔页 -->
+    <div class="slide">
+      <h2 class="title-large">Part 4 分隔页</h2>
+      <div class="mt-4" style="width:100%;">
+        <p class="subtitle">04</p>
+        <p class="subtitle">Part 4</p>
+        <p class="subtitle">大预言：OPC时代与新职业</p>
+        <p class="subtitle">下一个十年，属于一人公司（OPC）的时代，已经彻底来了。</p>
+      </div>
+    </div>
+
+    <!-- SLIDE 23: 独立开发者必备的“免费”工具栈 -->
+    <div class="slide">
+      <h2 class="title-large">独立开发者必备的“免费”工具栈</h2>
+      <div class="mt-4" style="width:100%;">
+        <p class="subtitle">Part 4 · 宝藏工具分享</p>
+        <div class="kiro-step"><div class="kiro-step-icon"></div><div class="step-content"><p>Vercel ｜ 一键部署上线（免费）</p></div></div>
+        <div class="kiro-step"><div class="kiro-step-icon"></div><div class="step-content"><p>Namecheap ｜ 域名持有（~1美元/月）</p></div></div>
+        <div class="kiro-step"><div class="kiro-step-icon"></div><div class="step-content"><p>Cloudflare ｜ DNS 解析与 CDN（免费）</p></div></div>
+        <p class="subtitle">🛡 后端与中间件</p>
+        <div class="kiro-step"><div class="kiro-step-icon"></div><div class="step-content"><p>Supabase ｜ 强大的后端服务（免费）</p></div></div>
+        <div class="kiro-step"><div class="kiro-step-icon"></div><div class="step-content"><p>Clerk    ｜ 身份与用户认证（免费）</p></div></div>
+        <div class="kiro-step"><div class="kiro-step-icon"></div><div class="step-content"><p>Sentry   ｜ 线上错误监控（免费）</p></div></div>
+        <div class="kiro-step"><div class="kiro-step-icon"></div><div class="step-content"><p>Resend   ｜ 触发邮件服务（免费）</p></div></div>
+        <p class="subtitle">💾 数据库与扩展</p>
+        <div class="kiro-step"><div class="kiro-step-icon"></div><div class="step-content"><p>Upstash  ｜ Serverless Redis 缓存（免费）</p></div></div>
+        <div class="kiro-step"><div class="kiro-step-icon"></div><div class="step-content"><p>Pinecone ｜ AI 应用的向量数据库（免费）</p></div></div>
+        <p class="subtitle">💡 思考：当技术基建和代码生产趋近于“0门槛”，纯堆代码的 CRUD 价值被无限压缩，未来有什么新岗位等待着我们？</p>
+      </div>
+    </div>
+
+    <!-- SLIDE 24: 新职业 (上)：后端的进阶之路 -->
+    <div class="slide">
+      <h2 class="title-large">新职业 (上)：后端的进阶之路</h2>
+      <div class="mt-4" style="width:100%;">
+        <p class="subtitle">Part 4 · 未来展望</p>
+        <p class="subtitle">2027-2030 后端工程师的演变与进阶</p>
+        <p class="subtitle">1. AI编排师（AI Orchestration Designer）</p>
+        <p class="subtitle">核心转变：从“微服务网关架构师”变成“AI任务流架构师”。</p>
+        <p class="subtitle">核心能力：将复杂业务拆解为 Spring Boot 服务与 AI Agent 的协作流。例如定义系统边界，编排传统 API 节点与 AI 分析节点何时通过异步 MQ 协同。这需要极强的服务端拆结构想力。</p>
+        <p class="subtitle">2. 上下文架构师（Context Architect）</p>
+        <p class="subtitle">核心转变：从“数据库模型设计”演变为“AI全局语境设计专家（DDD）”。</p>
+        <p class="subtitle">工作内容：设计系统“应当投喂给 AI 什么”。统筹 Steering 文件规范、Redis 缓存上下文、RAG 向量库与 OpenAPI 调用隔离。这要求极强的防数据越权与多租户隔离安全意识。</p>
+        <p class="subtitle">3. 架构规范与输出审计员（AI Output Auditor）</p>
+        <p class="subtitle">核心转变：从“写 CRUD 的初级码农”升级为“资深 Code Reviewer 和安全卫士”。</p>
+        <p class="subtitle">核心职责：当 AI 大量生产 Java 代码或 SQL 增量脚本时，审查其是否漏了分布式事务锁（如 `@RedissonLock`）、是否发生数据越权。这唯有真正踩过线上坑的后端专家才能高效把关。</p>
+      </div>
+    </div>
+
+    <!-- SLIDE 25: 新职业 (下)：后端的基建与治理 -->
+    <div class="slide">
+      <h2 class="title-large">新职业 (下)：后端的基建与治理</h2>
+      <div class="mt-4" style="width:100%;">
+        <p class="subtitle">Part 4 · 未来展望</p>
+        <p class="subtitle">2027-2030 后端工程师的演变与进阶</p>
+        <p class="subtitle">4. Skill与插件开发者（Skill Developer）</p>
+        <p class="subtitle">核心转变：从“被动实现 API 的人”变为“AI 内部基建的建设者”。</p>
+        <p class="subtitle">工作内容：把公司现有复杂且庞杂的遗留 Java 服务，用 OpenAPI 或 `.agents/skills` 封装成标准能力集，为团队沉淀研发套件库，享受内部基座开发的巨大红利。</p>
+        <p class="subtitle">5. AI工程化布道师（Human-AI Collaboration Trainer）</p>
+        <p class="subtitle">核心转变：从研发骨干成长为重塑组内“研发效能与工作流”的布道者。</p>
+        <p class="subtitle">职责：主导产研协作模式转型。例如推进 Spec 驱动开发，告诉团队哪些系统边界放心交给 AI 完成，哪些核心资产链路（如资金清结算）必须由有经验的人类强管控。</p>
+        <p class="subtitle">6. 数据追溯与治理调解员（AI Ethics Mediator）</p>
+        <p class="subtitle">核心转变：在 AI“黑盒调用”常态化下，成为负责兜底追踪与数据血缘的人。</p>
+        <p class="subtitle">工作内容：当 AI 自动决策链产生难以理解的脏数据（甚至引发线上事故）时，能从海量的日志（Log、RocketMQ 轨迹）中剥离业务幻觉与逻辑漏洞，制定针对性的补偿脚本。</p>
+      </div>
+    </div>
+
+    <!-- SLIDE 26: 结束页 -->
+    <div class="slide">
+      <h2 class="title-large">结束页</h2>
+      <div class="mt-4" style="width:100%;">
+        <p class="subtitle">🎯</p>
+        <p class="subtitle">Thanks</p>
+        <p class="subtitle">让 AI 成为你的</p>
+        <p class="subtitle">最强队友</p>
+        <p class="subtitle">Steering 沉淀规范 · Spec 驱动开发 · Skill 扩展能力 · Hook 自动化流程</p>
+        <p class="subtitle">🧩</p>
+        <p class="subtitle">skills.sh</p>
+        <p class="subtitle">Skill 生态</p>
+        <p class="subtitle">📋</p>
+        <p class="subtitle">.kiro/specs/</p>
+        <p class="subtitle">Spec 文件</p>
+        <p class="subtitle">📌</p>
+        <p class="subtitle">.kiro/steering/</p>
+        <p class="subtitle">团队规范</p>
+        <p class="subtitle">⚡</p>
+        <p class="subtitle">.kiro/hooks/</p>
+        <p class="subtitle">自动化</p>
+      </div>
+    </div>
+  </div>
